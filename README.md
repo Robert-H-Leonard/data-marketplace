@@ -5,6 +5,9 @@ Checkout the high level details of this project in this notion doc: https://www.
 # App Architecture
 Link to miro board: https://miro.com/app/board/uXjVPKqjxQM=/
 
+<img width="1107" alt="image" src="https://user-images.githubusercontent.com/40375385/198289055-4c404fcb-3ad2-4c85-b94c-f7e46cfbcc70.png">
+
+
 # Deployment
 
 ## Frontend
