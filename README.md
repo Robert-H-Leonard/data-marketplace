@@ -13,7 +13,7 @@ Link to miro board: https://miro.com/app/board/uXjVPKqjxQM=/
 ## Frontend
 We are using Vercel to deploy our front end. Whenever there is a change to master it will trigger a deployment to our apps public url:
 
-`https://chainlink-data-marketplace.vercel.app/`
+https://chainlink-data-marketplace.vercel.app/
 
 When adding new merge request vercel will create preview deployments for each merge request so we can test everything before merging to master.
 
