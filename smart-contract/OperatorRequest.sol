@@ -33,7 +33,7 @@ interface OperatorRequestInterface {
 
     function submitBid(uint operatorRequestId, OperatorBid calldata operatorBid) external returns (OperatorBid memory);
 
-    // Data validation function
+    // Data validation function (this is what the automation contract will call)
     function validateBidSubmission(uint operatorRequestId, address nodeOperator);
 }
 
