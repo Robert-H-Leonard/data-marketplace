@@ -9,6 +9,7 @@ struct Datasource {
 }
 
 struct OperatorBid {
+    uint id;
     address nodeOperator;
     uint dataFeedFee;
     string submission; // Not sure what this looks like yet
@@ -26,16 +27,21 @@ struct OperatorRequestData {
 interface OperatorRequestInterface {
 
     // Data store functions 
+    
     // See example pagination here: https://programtheblockchain.com/posts/2018/04/20/storage-patterns-pagination/
     function getOperatoreRequests(uint cursor, uint pageSize) external view returns (OperatorRequestData[] memory);
 
     function getOperatorRequestById(uint operatorRequestId) external view returns (OperatorRequestData memory);
 
+    // Require caller to be requestor in OperatorRequestData
+    function acceptBid(uint OperatorRequestId, uint OperatorBidId) external returns (bool);
+
     function submitBid(uint operatorRequestId, OperatorBid calldata operatorBid) external returns (OperatorBid memory);
 
     // Data validation function (this is what the automation contract will call)
-    function validateBidSubmission(uint operatorRequestId, address nodeOperator);
+    function validateBidSubmission(uint operatorRequestId, address nodeOperator) external returns (bool);
 }
+
 
 
 
