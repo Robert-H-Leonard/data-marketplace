@@ -1,8 +1,9 @@
 pragma solidity 0.8.0;
 
-// For open to bid -> bid accepted, the user/owner of the job request will trigger this transition after they "accept" a bid
-// For bid accepted -> pending validation, the node operator of the accepted bid will trigger this transition after they "submit" a bid
-// For pending validatipon -> validated, the automation contract will trigger this transition after validating a node operators submittion
+// statuses: open to bid, pending validation, and fulfilled
+// For open to bid: new job requests should automatically get this status
+// For open to bid -> pending validation, the user/owner of the job request will trigger this transition after they "accept" a bid
+// For pending validation -> fulfilled, the automation contract will trigger this transition after validating a node operators submittion
 
 enum JobRequestState { OpenBid, BidAccepted, PendingValidation, Validated }
 
