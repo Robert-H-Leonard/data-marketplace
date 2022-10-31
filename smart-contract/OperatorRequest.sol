@@ -4,7 +4,7 @@ pragma solidity 0.8.0;
 // For bid accepted -> pending validation, the node operator of the accepted bid will trigger this transition after they "submit" a bid
 // For pending validatipon -> validated, the automation contract will trigger this transition after validating a node operators submittion
 
-enum OperatorRequestState { OpenBid, BidAccepted, PendingValidation, Validated }
+enum JobRequestState { OpenBid, BidAccepted, PendingValidation, Validated }
 
 // https://docs.chain.link/docs/jobs/ 
 
@@ -28,41 +28,52 @@ struct OperatorBid {
     OperatorSubmission submission; 
 }
 
-struct OperatorRequestData {
+struct JobRequestData {
     uint id;
     address requestor; // address of person requesting data feed
     Datasource requestedDataSource;
     OperatorBid[] bids;
-    OperatorRequestState currentState;
+    JobRequestState currentState;
 }
 
 
-interface OperatorRequestInterface {
+interface JobRequestInterface {
 
-    // Data store functions 
+    // Data store functions ///////////////////
 
     // See example pagination here: https://programtheblockchain.com/posts/2018/04/20/storage-patterns-pagination/
-    function getOperatoreRequests(uint cursor, uint pageSize) external view returns (OperatorRequestData[] memory);
+    function getJobRequests(uint cursor, uint pageSize) external view returns (JobRequestData[] memory);
 
-    function getOperatorRequestById(uint operatorRequestId) external view returns (OperatorRequestData memory);
+    function getJobRequestById(uint jobRequestId) external view returns (JobRequestData memory);
 
     // Require caller to be requestor in OperatorRequestData
-    function acceptBid(uint OperatorRequestId, uint OperatorBidId) external returns (bool);
+    function acceptBid(uint jobRequestId, uint operatorBidId) external returns (bool);
 
-    function submitBid(uint operatorRequestId, OperatorBid calldata operatorBid) external returns (OperatorBid memory);
+    function submitBid(uint jobRequestId, OperatorBid calldata operatorBid) external returns (OperatorBid memory);
 
-    // Data validation function (this is what the automation contract will call)
-    function validateBidSubmission(uint operatorRequestId, address nodeOperator) external returns (bool);
+
+    // Validation functions ///////////////////
+
+    // Method that `performUpkeep` method in the automation contract will call
+    function validatePendingBids() external returns (bool);
 }
 
 
 
 // Contract to be implemented
-contract OperatorRequest is OperatorRequestInterface {
+contract JobRequest is JobRequestInterface {
 
-    event OperatorRequestCreated(address indexed _createdBy, uint indexed requestId);
-    event OperatorRequestUpdated(address indexed _createdBy, uint indexed requestId, string previousState, string currentState);
-    event OperatorSubmissionValidated(int indexed operatorBidId, address indexed nodeOperator);
+    event JobRequestCreated(address indexed _createdBy, uint indexed requestId);
+    event JobRequestUpdated(address indexed _createdBy, uint indexed requestId, string previousState, string currentState);
+    event OperatorSubmissionValidated(int indexed operatorBidId, int indexed jobRequestId, address indexed nodeOperator);
 
-    mapping (uint => OperatorRequestData) public operatorRequests;
+    // Hashmap we are using as a database to manage job request
+    mapping (uint => JobRequestData) public jobRequests;
+
+    // Hashmap acting as a cache to know which bids we need to validate with automation contract
+    mapping (uint => OperatorBid) private bidsPendingValidation;
+
+    // Data validation function. 
+    // When `validatePendingBids` is called that method will attemot to call this method at least once (the first non zero address retreived from bidsPendingValidation)
+    function validateBidSubmission(uint jobRequestId, uint operatorBidId) private returns (bool);
 }
