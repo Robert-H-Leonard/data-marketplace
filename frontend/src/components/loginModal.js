@@ -8,7 +8,12 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const { chains, provider } = configureChains(
     [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
-    [alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()]
+    [ jsonRpcProvider({ 
+      rpc: (chain) => 
+        ({ http: `[https://${chain.id}.example.com](https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba)`
+        }), })
+     , publicProvider()
+    ]
 );
 
 const { connectors } = getDefaultWallets({
