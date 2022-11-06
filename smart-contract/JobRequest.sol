@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
 // statuses: open to bid, pending validation, and fulfilled
@@ -31,13 +32,13 @@ struct OperatorBid {
     address nodeOperator;
     uint256 dataFeedFee;
     OperatorSubmission submission;
+    uint jobRequestId;
 }
 
 struct JobRequestData {
     uint256 id;
     address requestor; // address of person requesting data feed
     Datasource requestedDataSource;
-    OperatorBid[] bids;
     JobRequestState currentState;
 }
 
@@ -55,6 +56,8 @@ interface JobRequestInterface {
         view
         returns (JobRequestData memory);
 
+    function getBidsOnJobRequest(uint jobRequestId) external view returns (OperatorBid[] memory);
+
     function createJobRequest(Datasource calldata dataSource)
         external
         returns (bool);
@@ -62,7 +65,7 @@ interface JobRequestInterface {
     // Require caller to be requestor in OperatorRequestData
     function acceptBid(uint256 jobRequestId, uint256 operatorBidId) external;
 
-    function submitBid(uint256 jobRequestId, OperatorBid calldata operatorBid)
+    function submitBid(uint256 jobRequestId, OperatorSubmission memory operatorSubmission, uint dataFee)
         external;
 
     // Validation functions ///////////////////
@@ -75,37 +78,58 @@ interface JobRequestInterface {
 contract JobRequest is JobRequestInterface {
     event JobRequestCreated(
         address indexed _createdBy,
-        uint256 indexed requestId
+        uint indexed requestId
     );
     event JobRequestUpdated(
         address indexed _createdBy,
-        uint256 indexed requestId,
+        uint indexed requestId,
         string previousState,
         string currentState
     );
+
+    event OperatorSubmittedBid(
+        uint indexed operatorAddress,
+        int indexed jobRequestId,
+        int indexed operatorBidId
+    );
+
     event OperatorSubmissionValidated(
-        int256 indexed operatorBidId,
-        int256 indexed jobRequestId,
+        int indexed operatorBidId,
+        int indexed jobRequestId,
         address indexed nodeOperator
     );
 
     // Hashmap we are using as a database to manage job request
     mapping(uint256 => JobRequestData) public jobRequests;
-    uint256 private numOfJobRequests;
-    uint256 private numSubmittedOfBids;
+    // Mapping between job request ID and bids. Had to remove from job request data because of this: https://stackoverflow.com/questions/49345903/copying-of-type-struct-memory-memory-to-storage-not-yet-supported
+    mapping(uint256 => OperatorBid[]) bids;
+
+    uint256 public numOfJobRequests;
+    uint256 public numSubmittedOfBids;
 
     // Hashmap acting as a cache to know which bids we need to validate with automation contract
     mapping(uint256 => OperatorBid) private bidsPendingValidation;
-    uint256 private numOfBidsPendingValidation;
+    uint256 public numOfBidsPendingValidation;
 
-    ////////// Data store functions ///////////
-
-    function createJobRequest(Datasource calldata dataSource)
+    function createJobRequest(Datasource memory dataSource)
         external
         override
         returns (bool)
     {
-        // Add new jobRequest to mapping
+        uint newId = numOfJobRequests + 1;
+
+        JobRequestData memory newRequestData = JobRequestData({
+            id: newId, 
+            requestor: msg.sender,
+            requestedDataSource: dataSource,
+            currentState: JobRequestState.OpenBid
+        });
+
+        jobRequests[newId] = newRequestData;
+
+        numOfJobRequests++;
+
+        emit JobRequestCreated(msg.sender, newId);
         return true;
     }
 
@@ -150,28 +174,42 @@ contract JobRequest is JobRequestInterface {
         return jobRequests[jobRequestId];
     }
 
-    function submitBid(uint256 jobRequestId, OperatorBid memory operatorBid)
+    function getBidsOnJobRequest(uint jobRequestId) external view override returns (OperatorBid[] memory) {
+        return bids[jobRequestId];
+    }
+
+    function submitBid(uint256 jobRequestId, OperatorSubmission memory operatorSubmission, uint dataFee)
         public
         override
     {
-        // check to job request exists
+        // check to see if job request exists
         require(
             jobRequests[jobRequestId].id > 0,
             "Job request id doesn't exist."
         );
 
-        // loop to check if bid already exists
-        for (uint256 idx = 0; idx < numSubmittedOfBids; idx++) {
+        OperatorBid[] memory currentBids = bids[jobRequestId];
+
+        // check if user already sumitted a bid on this jobRequest
+        for (uint256 idx = 0; idx < currentBids.length; idx++) {
             require(
-                jobRequests[jobRequestId].bids[idx].id != operatorBid.id,
-                "Bid already exists."
+                currentBids[idx].nodeOperator != msg.sender,
+                "Already submitted a bid."
             );
         }
 
         // updates jobRequest bids with new element
-        jobRequests[jobRequestId].bids.push(operatorBid);
+        bids[jobRequestId].push(OperatorBid({
+            id: numSubmittedOfBids,
+            nodeOperator: msg.sender,
+            dataFeedFee: dataFee,
+            submission: operatorSubmission,
+            jobRequestId: jobRequestId
+        }));
+
         numSubmittedOfBids += 1;
     }
+
 
     function acceptBid(uint256 jobRequestId, uint256 operatorBidId)
         public
@@ -182,23 +220,31 @@ contract JobRequest is JobRequestInterface {
             jobRequests[jobRequestId].id > 0,
             "Job request id doesn't exist."
         );
+
         // check if there is atleast one bid to accept
         require(
-            jobRequests[jobRequestId].bids.length >= 1,
+            bids[jobRequestId].length >= 1,
             "There are no bids for this job request."
         );
+
         // check to see if bid is in validated state
         require(
             jobRequests[jobRequestId].currentState != JobRequestState.Validated,
             "Bid is already in validated state."
         );
 
+        OperatorBid[] memory currentBids = bids[jobRequestId];
+
         // loops through number of bids to find matching operator bid id
-        for (uint256 idx = 0; idx < numSubmittedOfBids; idx++) {
-            if (jobRequests[jobRequestId].bids[idx].id == operatorBidId) {
+        for (uint256 idx = 0; idx < currentBids.length; idx++) {
+            if (currentBids[idx].id == operatorBidId) {
                 // update bid state to Pending Validation
                 jobRequests[jobRequestId].currentState = JobRequestState
                     .PendingValidation;
+
+                // Add bid to pending validation so chainlink automation will trigger validation
+                bidsPendingValidation[operatorBidId] = currentBids[idx];
+
                 // increment numOfBidsPendingValidation by 1
                 numOfBidsPendingValidation += 1;
             }
