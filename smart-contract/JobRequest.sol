@@ -83,14 +83,14 @@ contract JobRequest is JobRequestInterface {
     event JobRequestUpdated(
         address indexed _createdBy,
         uint indexed requestId,
-        string previousState,
+        uint indexed bidId,
         string currentState
     );
 
     event OperatorSubmittedBid(
-        uint indexed operatorAddress,
-        int indexed jobRequestId,
-        int indexed operatorBidId
+        address indexed operatorAddress,
+        uint indexed jobRequestId,
+        uint indexed operatorBidId
     );
 
     event OperatorSubmissionValidated(
@@ -178,7 +178,7 @@ contract JobRequest is JobRequestInterface {
         return bids[jobRequestId];
     }
 
-    function submitBid(uint256 jobRequestId, OperatorSubmission memory operatorSubmission, uint dataFee)
+    function submitBid(uint jobRequestId, OperatorSubmission memory operatorSubmission, uint dataFee)
         public
         override
     {
@@ -207,6 +207,8 @@ contract JobRequest is JobRequestInterface {
             jobRequestId: jobRequestId
         }));
 
+        emit OperatorSubmittedBid(msg.sender, jobRequestId, numSubmittedOfBids);
+
         numSubmittedOfBids += 1;
     }
 
@@ -215,11 +217,18 @@ contract JobRequest is JobRequestInterface {
         public
         override
     {
+
         // check if job request id exists
         require(
             jobRequests[jobRequestId].id > 0,
             "Job request id doesn't exist."
         );
+
+        // check if message sender created the job request
+        require(
+            msg.sender == jobRequests[jobRequestId].requestor,
+            "Only the address that created this request can accept bids"
+         );
 
         // check if there is atleast one bid to accept
         require(
@@ -241,14 +250,17 @@ contract JobRequest is JobRequestInterface {
                 // update bid state to Pending Validation
                 jobRequests[jobRequestId].currentState = JobRequestState
                     .PendingValidation;
-
+                
                 // Add bid to pending validation so chainlink automation will trigger validation
                 bidsPendingValidation[operatorBidId] = currentBids[idx];
 
                 // increment numOfBidsPendingValidation by 1
                 numOfBidsPendingValidation += 1;
+
+                emit JobRequestUpdated( jobRequests[jobRequestId].requestor, jobRequestId, operatorBidId, "Pending Validation");
             }
         }
+
     }
 
     ////////// Validation functions //////////
@@ -258,6 +270,8 @@ contract JobRequest is JobRequestInterface {
         // call validateBidSubmission on them
         // decrement numOfBidsPendingValidation
         // decrement numSubmittedOfBids
+
+        emit OperatorSubmissionValidated(1,1,msg.sender);
         return true;
     }
 
