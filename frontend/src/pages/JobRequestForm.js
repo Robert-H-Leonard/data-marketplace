@@ -3,6 +3,7 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
 
 export default function JobRequestForm() {
     function handleChange() {
@@ -11,35 +12,38 @@ export default function JobRequestForm() {
     return (
         <div className='job_request_form_page'>
             <TextField
-                className='disabled_input'
+                disabled
+                id="outlined-disabled"
+                className='disabled_input margin_right'
                 label="ID"
-                defaultValue="Default Value"
+                value={1}
             />
             <TextField
+                disabled
+                id="outlined-disabled"
                 className='disabled_input'
                 label="Owner"
-                defaultValue="Default Value"
+                value="vitalik.eth"
             />
             <TextField
                 className='text_input'
                 label="Name"
-                defaultValue="Default Value"
+                defaultValue="Corn price"
             />
             <TextField
                 className='text_input'
                 label="Data Source&#40;API Link&#41;"
-                defaultValue="Default Value"
+                defaultValue="https://api.coin**sk.com/**/**/currentprice.json"
             />
             <TextField
                 className='text_input'
                 label="API Key"
-                defaultValue="Default Value"
+                defaultValue="AI*****4JsXZ-H-G###33"
             />
-            <FormControl className='dropdown'>
-                <InputLabel id="demo-simple-select-helper-label">Network</InputLabel>
+            <FormControl className='dropdown margin_right'>
+                <InputLabel>Network</InputLabel>
                 <Select
                     labelId="demo-simple-select-helper-label"
-                    id="demo-simple-select-helper"
                     value={1}
                     label="Status"
                     fullWidth={true}
@@ -63,19 +67,14 @@ export default function JobRequestForm() {
             </FormControl>
             <TextField
                 className='text_input'
-                label="Network"
-                defaultValue="Default Value"
-            />
-            <TextField
-                className='text_input'
-                label="Data Format"
-                defaultValue="Default Value"
-            />
-            <TextField
-                className='text_input'
                 label="Requested Data"
-                defaultValue="Default Value"
+                defaultValue="Corn spot price"
             />
+            <Button className='save' variant="contained"> Save Changes</Button>
+            <Button className='cancel' variant="text">Cancel</Button>
         </div>
+
+
+
     )
 }

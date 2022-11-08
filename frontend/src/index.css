@@ -5,6 +5,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin-left: 81px;
   margin-right: 100px;
+  overflow-y: scroll;
 }
 
 header {
@@ -59,7 +60,7 @@ header h1 {
   text-align: left;
 }
 
-.filter_input .filterIcon{ 
+.filter_input .filterIcon {
   margin-top: 22px;
   margin-left: 31px;
 }
@@ -73,27 +74,32 @@ header h1 {
 .data_table .table_headers {
   font-weight: 400px;
 }
-.job_request_form_page{ 
+
+.job_request_form_page {
   width: 760px;
   height: 549px;
+  margin-left: 156px;
 }
 
-.job_request_form_page .text_input{ 
+.job_request_form_page .text_input {
   width: 100%;
   margin-bottom: 16px;
-  
+
 }
 
-.job_request_form_page .dropdown, .job_request_form_page .disabled_input{ 
-  width: calc((100% - 58px) / 2);
+.job_request_form_page .dropdown,
+.job_request_form_page .disabled_input {
+  width: calc((100% - 32px) / 2);
   margin-bottom: 16px;
 }
 
-.job_request_form_page .dropdown:first-of-type{ 
-  margin-right: 58px;
+.job_request_form_page .margin_right {
+  margin-right: 32px;
 }
-.job_request_form_page .disabled_input:first-of-type{ 
-  margin-right: 58px;
+
+.job_request_form_page .save, .job_request_form_page .cancel { 
+  font-weight: 600;
+  letter-spacing: .5px;
 }
 
 footer {
@@ -107,10 +113,10 @@ footer {
   margin-bottom: 38.5px;
 }
 
-footer img.logo2{ 
+footer img.logo2 {
   margin-left: 48px;
   width: 49px;
-  height: 57px ;
+  height: 57px;
   margin-top: 14.5px;
 }
 
