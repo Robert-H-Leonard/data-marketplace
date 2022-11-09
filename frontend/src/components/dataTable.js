@@ -15,7 +15,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
+import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+
 
 
 function createData(owner, name, network, fee, bids, accountStatus) {

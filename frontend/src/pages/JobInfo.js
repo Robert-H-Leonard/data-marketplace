@@ -3,6 +3,65 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { Chip } from '@mui/material';
 import BidAccordian from '../components/bidAccordian';
+import { TextField } from '@mui/material'
+import InputAdornment from '@mui/material/InputAdornment';
+import Button from '@mui/material/Button'
+
+function openToBidView(requestor) {
+    return (
+        <section className='open_to_bid'>
+            {requestor &&
+                <div>
+                    <h3> Bidding History </h3>
+                    <BidAccordian link='0.5 LINK' expiration='08/24' user='0xDC%%9AE02--**5%7022' requestor={true} />
+                    <BidAccordian link='0.25 LINK' expiration='08/24' user='0x6--.7432ffE%%%6e7C786..EA' requestor={true} />
+                </div>
+            }
+            {!requestor &&
+                <div>
+                    <form className='bid_input'>
+                        <TextField
+                            label="New Bid"
+                            id="outlined-start-adornment"
+                            sx={{ m: 1, width: '25ch' }}
+                            InputProps={{
+                                endAdornment: <InputAdornment position="end">LINK</InputAdornment>,
+                            }}
+                        />
+                        <Button variant="contained">BID</Button>
+                    </form>
+                    <h3>Bids</h3>
+                    <BidAccordian link='0.5 LINK' expiration='08/24' user='0xDC%%9AE02--**5%7022' requestor={false} />
+                    <BidAccordian link='0.25 LINK' expiration='08/24' user='0x6--.7432ffE%%%6e7C786..EA' requestor={false} />
+                </div>
+            }
+        </section>
+
+    )
+}
+
+function validateView() {
+    return (
+        <section className='pending_view'>Data needed for automation submitted through a form</section>
+    )
+}
+
+function fufilledView() {
+    return( 
+    <div className='fufilled_view'>
+        <h3>Validation Example</h3>
+        <TextField disabled
+            id="outlined-read-only-input"
+            label="Returned Value"
+            defaultValue="uint256: 53"
+            fullWidth={true}
+            InputProps={{
+                readOnly: true,
+            }}
+        />
+    </div>)
+
+}
 
 export default function JobInfo() {
     const steps = ['Open to Bid', 'Validate', 'Fufilled']
@@ -23,14 +82,12 @@ export default function JobInfo() {
                 <div className='chip_row'>
                     <Chip className="chip" label="Optimism" />
                     <Chip className='chip' label="uint256" />
+                    {<Chip className='chip' label="0.1 LINK" />}
                 </div>
-                <h3> Bidding History </h3>
-                <BidAccordian link='0.5 LINK' expiration='08/24' user='0xDC%%9AE02--**5%7022' />
-                <BidAccordian link='0.25 LINK' expiration='08/24' user='0x6--.7432ffE%%%6e7C786..EA' />
-
+                {openToBidView()}
+                {validateView()}
+                {fufilledView()}
             </div>
-
-
         </div>
 
     )

@@ -143,6 +143,28 @@ header h1 {
   width: max-content;
 }
 
+.job_info .open_to_bid .bid_input{
+  margin-top: 67px;
+  margin-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.job_info .open_to_bid .bid_input button{ 
+  margin-top: 18px;
+}
+
+.job_info .pending_view{ 
+  background: rgba(217, 217, 217, 1);
+  width: 648px;
+  height: 173px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 113px;
+  margin-bottom: 93.5px ;
+}
 .bid_accordian{ 
   height: fit-content;
 }

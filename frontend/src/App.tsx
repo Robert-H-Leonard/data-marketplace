@@ -21,9 +21,9 @@ function App() {
       </Helmet>
       <Header />
       <LoginModal />
-      {/* <Dashboard /> */}
+      <Dashboard />
       {/* <JobRequestForm/> */}
-      <JobInfo />
+      {/* <JobInfo /> */}
       <Footer />
     </div>
   );
