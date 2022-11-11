@@ -12,26 +12,13 @@ export default function JobRequestForm() {
     return (
         <div className='job_request_form_page'>
             <TextField
-                disabled
-                id="outlined-disabled"
-                className='disabled_input margin_right'
-                label="ID"
-                value={1}
-            />
-            <TextField
-                disabled
-                id="outlined-disabled"
-                className='disabled_input'
-                label="Owner"
-                value="vitalik.eth"
-            />
-            <TextField
                 className='text_input'
                 label="Name"
                 defaultValue="Corn price"
             />
             <TextField
                 className='text_input'
+                helperText='optional'
                 label="Data Source&#40;API Link&#41;"
                 defaultValue="https://api.coin**sk.com/**/**/currentprice.json"
             />
@@ -49,7 +36,8 @@ export default function JobRequestForm() {
                     fullWidth={true}
                     onChange={handleChange}
                 >
-                    <MenuItem value={1}>Optimism</MenuItem>
+                    <MenuItem value={1}> &#40;Goerli&#41; Ethereum </MenuItem>
+                    <MenuItem disabled value={2}>Optimism</MenuItem>
                 </Select>
             </FormControl>
             <FormControl className='dropdown'>
@@ -62,7 +50,10 @@ export default function JobRequestForm() {
                     fullWidth={true}
                     onChange={handleChange}
                 >
-                    <MenuItem value={1}>uint256</MenuItem>
+                    <MenuItem value={1}>uint</MenuItem>
+                    <MenuItem value={1}>string</MenuItem>
+                    <MenuItem value={1}>int</MenuItem>
+                    <MenuItem value={1}>byte</MenuItem>
                 </Select>
             </FormControl>
             <TextField

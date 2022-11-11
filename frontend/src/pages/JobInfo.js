@@ -23,8 +23,11 @@ function openToBidView(requestor) {
                         <TextField
                             label="New Bid"
                             id="outlined-start-adornment"
+                            type = "number"
                             sx={{ m: 1, width: '25ch' }}
                             InputProps={{
+                                inputMode: 'numeric',
+                                pattern: '[0-9]*',
                                 endAdornment: <InputAdornment position="end">LINK</InputAdornment>,
                             }}
                         />
@@ -64,6 +67,7 @@ function fufilledView() {
 }
 
 export default function JobInfo() {
+    const [jobStatus, setStatus] = null
     const steps = ['Open to Bid', 'Validate', 'Fufilled']
     return (
         <div className="job_info_page">
@@ -82,11 +86,10 @@ export default function JobInfo() {
                 <div className='chip_row'>
                     <Chip className="chip" label="Optimism" />
                     <Chip className='chip' label="uint256" />
-                    {<Chip className='chip' label="0.1 LINK" />}
                 </div>
-                {openToBidView()}
-                {validateView()}
-                {fufilledView()}
+                {jobStatus === 'Open to Bid' && openToBidView()}
+                {jobStatus === 'Validate' && validateView()}
+                {jobStatus === 'Fufilled' && fufilledView()}
             </div>
         </div>
 
