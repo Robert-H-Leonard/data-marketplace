@@ -44,7 +44,7 @@ export interface IJobRequestStore {
     getBidsOnJobRequest: (id: number) => Promise<OperatorBid[]>;
 
     acceptBid: (jobRequestId: number, operatorBidId: number) => void;
-    submitBid: (jobRequestId: number, operatorSubmission: OperatorSubmission) => void;
+    submitBid: (jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number) => void;
 }
 
 export class JobRequestStore implements IJobRequestStore {
@@ -124,11 +124,15 @@ export class JobRequestStore implements IJobRequestStore {
     }
 
     public async acceptBid(jobRequestId: number, operatorBid: number): Promise<void> {
-
+        const result = await this.jobRequestContract.acceptBid(jobRequestId, operatorBid);
+        return;
     }
 
-    public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission): Promise<void> {
-        
+    // Example submission: ["1deof322","get-fake-data",["http","GET","test-source-3.com"],"data-response"]
+    public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number): Promise<void> {
+        const sub = [operatorSubmission.jobRequestName, operatorSubmission.jobRequestName, ["http","GET",operatorSubmission.apiUrl], operatorSubmission.dataResponse]
+        const result = await this.jobRequestContract.submit(jobRequestId, sub, dataFee);
+        return;
     }
 
 }
@@ -189,7 +193,7 @@ class TestStore implements IJobRequestStore {
         }
     }
 
-    public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission): Promise<void> {
+    public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number): Promise<void> {
         if(jobRequestId < this.testJobRequestData.length) {
             this.testOperatorSubmissions.push(operatorSubmission)
         }
