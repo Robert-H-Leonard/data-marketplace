@@ -1,0 +1,532 @@
+[
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_createdBy",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "requestId",
+				"type": "uint256"
+			}
+		],
+		"name": "JobRequestCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "_createdBy",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "requestId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "bidId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "currentState",
+				"type": "string"
+			}
+		],
+		"name": "JobRequestUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "int256",
+				"name": "operatorBidId",
+				"type": "int256"
+			},
+			{
+				"indexed": true,
+				"internalType": "int256",
+				"name": "jobRequestId",
+				"type": "int256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "nodeOperator",
+				"type": "address"
+			}
+		],
+		"name": "OperatorSubmissionValidated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "operatorAddress",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "operatorBidId",
+				"type": "uint256"
+			}
+		],
+		"name": "OperatorSubmittedBid",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "operatorBidId",
+				"type": "uint256"
+			}
+		],
+		"name": "acceptBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "requestType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "method",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Datasource",
+				"name": "dataSource",
+				"type": "tuple"
+			}
+		],
+		"name": "createJobRequest",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "getBidsOnJobRequest",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "nodeOperator",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "dataFeedFee",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "jobRequestId",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "jobRequestName",
+								"type": "string"
+							},
+							{
+								"components": [
+									{
+										"internalType": "string",
+										"name": "requestType",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "method",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "url",
+										"type": "string"
+									}
+								],
+								"internalType": "struct Datasource",
+								"name": "datasource",
+								"type": "tuple"
+							},
+							{
+								"internalType": "string",
+								"name": "dataResponse",
+								"type": "string"
+							}
+						],
+						"internalType": "struct OperatorSubmission",
+						"name": "submission",
+						"type": "tuple"
+					},
+					{
+						"internalType": "uint256",
+						"name": "jobRequestId",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct OperatorBid[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "getJobRequestById",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "requestor",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "requestType",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "method",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "url",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Datasource",
+						"name": "requestedDataSource",
+						"type": "tuple"
+					},
+					{
+						"internalType": "enum JobRequestState",
+						"name": "currentState",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct JobRequestData",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "cursor",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "requestAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "getJobRequests",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "requestor",
+						"type": "address"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "requestType",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "method",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "url",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Datasource",
+						"name": "requestedDataSource",
+						"type": "tuple"
+					},
+					{
+						"internalType": "enum JobRequestState",
+						"name": "currentState",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct JobRequestData[]",
+				"name": "",
+				"type": "tuple[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "new_cursor",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "jobRequests",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "requestor",
+				"type": "address"
+			},
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "requestType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "method",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "url",
+						"type": "string"
+					}
+				],
+				"internalType": "struct Datasource",
+				"name": "requestedDataSource",
+				"type": "tuple"
+			},
+			{
+				"internalType": "enum JobRequestState",
+				"name": "currentState",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numOfBidsPendingValidation",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numOfJobRequests",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numSubmittedOfBids",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "jobRequestId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "jobRequestName",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "requestType",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "method",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "url",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Datasource",
+						"name": "datasource",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "dataResponse",
+						"type": "string"
+					}
+				],
+				"internalType": "struct OperatorSubmission",
+				"name": "operatorSubmission",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "dataFee",
+				"type": "uint256"
+			}
+		],
+		"name": "submitBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "validatePendingBids",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
