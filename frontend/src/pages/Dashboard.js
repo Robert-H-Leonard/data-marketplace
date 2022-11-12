@@ -3,7 +3,7 @@ import { useState } from 'react'
 import EnhancedTable from '../components/dataTable'
 import FilterInput from '../components/FilterInput'
 
-export default function Dashboard() {
+export default function Dashboard({jobs}) {
 
 
     return (
@@ -13,7 +13,7 @@ export default function Dashboard() {
 
             <FilterInput />
 
-            <EnhancedTable />
+            <EnhancedTable jobs={jobs} />
 
         </div>
     )

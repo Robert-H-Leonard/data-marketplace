@@ -14,25 +14,9 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-
-
-
-function createData(owner, name, network, fee, bids, accountStatus) {
-    return {
-        owner,
-        name,
-        network,
-        fee,
-        bids,
-        accountStatus
-    };
-}
-
-const rows = [
-    createData('vitalik.eth', 'Price of corn', 'Optimism', '', 2, 'Open Bid'),
-];
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -66,6 +50,12 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
+        id: 'id',
+        numeric: true,
+        disablePadding: false,
+        label: 'ID',
+    },
+    {
         id: 'owner',
         numeric: false,
         disablePadding: false,
@@ -85,7 +75,7 @@ const headCells = [
     },
     {
         id: 'fee',
-        numeric: false,
+        numeric: true,
         disablePadding: false,
         label: 'Fee',
     },
@@ -101,13 +91,6 @@ const headCells = [
         disablePadding: false,
         label: 'Account status',
     },
-    {
-        id: 'menu',
-        numeric: false,
-        disablePadding: false,
-        label: '',
-    },
-
 ];
 
 function EnhancedTableHead(props) {
@@ -120,20 +103,6 @@ function EnhancedTableHead(props) {
     return (
         <TableHead>
             <TableRow className="table_headers">
-                <TableCell align="right">
-                    <FormControlLabel
-                        label="ID"
-                        control={<Checkbox
-                            color="secondary"
-                            indeterminate={true}
-                            checked={rowCount > 0 && numSelected === rowCount}
-                            onChange={onSelectAllClick}
-                            inputProps={{
-                                'aria-label': 'select all IDs',
-                            }}
-                        />}
-                    />
-                </TableCell>
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
@@ -170,13 +139,40 @@ EnhancedTableHead.propTypes = {
 };
 
 
-export default function EnhancedTable() {
+export default function EnhancedTable({ jobs }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    function createData({ id, requestorAddress, currentState }) {
+        let owner = requestorAddress
+        let accountStatus = currentState.toLowerCase()
+        if (accountStatus.includes('open')) {
+            accountStatus = 'Open Bid'
+        } else if (accountStatus.includes(`fulfilled`)) {
+            accountStatus = 'Success'
+        } else {
+            accountStatus = 'Pending'
+        }
+        let fee = Math.random().toFixed(2)
+        let bids = 0
+        let network = `(Goerli) Ethereum`
+
+        return {
+            id,
+            owner,
+            accountStatus,
+            fee,
+            bids,
+            network
+        };
+    }
+
+    const rows = jobs.map(job => createData(job))
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -191,26 +187,6 @@ export default function EnhancedTable() {
             return;
         }
         setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -259,28 +235,21 @@ export default function EnhancedTable() {
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
+                                        <Link to={`/job/${row.id}`} state={{info:row}}>
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.id)}
-                                            role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={row.id}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell align="right">
-                                                <FormControlLabel
-                                                    label={index}
-                                                    control={<Checkbox checked={isItemSelected} />} />
-                                            </TableCell>
+                                            key={row.id}>
+                                            <TableCell align="right" padding='normal'>{row.id}</TableCell>
                                             <TableCell align="right" padding='normal'>{row.owner}</TableCell>
                                             <TableCell align="right" padding='normal'>{row.name}</TableCell>
                                             <TableCell align="right" padding='normal'>{row.network}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.fee}</TableCell>
+                                            <TableCell align="right" padding='normal'>{row.fee} LINK</TableCell>
                                             <TableCell align="right" padding='normal'>{row.bids}</TableCell>
                                             <TableCell align="right" padding='normal'><Chip label={row.accountStatus} color={row.accountStatus === 'Open Bid' ? 'primary' : row.accountStatus === 'Fulfilled' ? 'success' : 'warning'} /></TableCell>
-                                            <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
                                         </TableRow>
+                                        </Link>
                                     );
                                 })}
                             {emptyRows > 0 && (

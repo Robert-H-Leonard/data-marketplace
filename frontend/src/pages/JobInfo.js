@@ -6,8 +6,9 @@ import BidAccordian from '../components/bidAccordian';
 import { TextField } from '@mui/material'
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button'
+import { useLocation } from "react-router";
 
-function openToBidView(requestor) {
+function openToBidView({requestor, info}) {
     return (
         <section className='open_to_bid'>
             {requestor &&
@@ -67,7 +68,9 @@ function fufilledView() {
 }
 
 export default function JobInfo() {
-    const [jobStatus, setStatus] = null
+    let data = useLocation();
+    console.log(data)
+    const [jobStatus, setStatus] = 'blah'
     const steps = ['Open to Bid', 'Validate', 'Fufilled']
     return (
         <div className="job_info_page">

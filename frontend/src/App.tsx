@@ -69,9 +69,9 @@ function App() {
           <RainbowKitProvider chains={chains}>
             <Header />
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard jobs={jobRequest}/>} />
               <Route path="createJob" element={<JobRequestForm />} />
-              <Route path="jobId" element={<JobInfo />} />
+              <Route path="/job/:id" element={<JobInfo/>} />
             </Routes>
             <Footer />
           </RainbowKitProvider>
