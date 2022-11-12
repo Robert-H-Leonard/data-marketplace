@@ -20,7 +20,7 @@ function App() {
   const { address, isConnected } = useAccount();
   const { data: signer, isError, isLoading } = useSigner();
 
-  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(false, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
 
   const [jobRequest, setJobRequest] = useState<JobRequestData[]>([]);
   const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
