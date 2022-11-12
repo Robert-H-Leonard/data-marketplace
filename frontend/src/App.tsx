@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -7,8 +7,25 @@ import JobRequestForm from './pages/JobRequestForm';
 import { Helmet } from 'react-helmet'
 import JobInfo from './pages/JobInfo';
 import { BrowserRouter, NavLink, Routes, Route } from 'react-router-dom';
+import { JobRequestStore, IJobRequestStore, JobRequestData } from './store/JobRequestStore';
 
 function App() {
+
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true);
+  
+  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([])
+
+  useEffect(() => {
+    const fetchJobRequest = async () => {
+      const jobRequest = await jobRequestStore.getJobRequests();
+      setJobRequest(jobRequest);
+
+      console.log(`Found job request: ${JSON.stringify(jobRequest)}`)
+    }
+
+    fetchJobRequest();
+  },[])
+
   return (
     <BrowserRouter>
       <div className="App">
