@@ -99,7 +99,7 @@ class TestStore implements IJobRequestStore {
             {id: "1", requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com'},
             {id: "2", requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com'},
             {id: "3", requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com'},
-            {id: "4", requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com'}
+            {id: "0", requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com'}
         ];
 
         this.testOperatorSubmissions = [
