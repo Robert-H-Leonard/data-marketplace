@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -12,6 +12,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from "wagmi/providers/public";
+import { JobRequestStore, IJobRequestStore, JobRequestData } from './store/JobRequestStore';
 
 
 function App() {
@@ -37,6 +38,22 @@ function App() {
     connectors,
     provider
   });
+
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true);
+
+  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([])
+
+  useEffect(() => {
+    const fetchJobRequest = async () => {
+      const jobRequest = await jobRequestStore.getJobRequests();
+      setJobRequest(jobRequest);
+
+      console.log(`Found job request: ${JSON.stringify(jobRequest)}`)
+    }
+
+    fetchJobRequest();
+  }, [])
+
   return (
     <BrowserRouter>
       <div className="App">
