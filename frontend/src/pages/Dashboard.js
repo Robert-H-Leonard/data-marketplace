@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import EnhancedTable from '../components/dataTable'
 import FilterInput from '../components/FilterInput'
-import LoginModal from '../components/loginModal'
 
 export default function Dashboard() {
 
