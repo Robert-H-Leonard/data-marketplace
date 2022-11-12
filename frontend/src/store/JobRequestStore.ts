@@ -7,15 +7,23 @@ import JobRequestAbi from "./jobRequestAbi.json";
 
 type JobRequestState = 'OpenBid' | 'PendingValidation' | 'Validated';
 
+const getCurrentStateFromNumber = (num: number): JobRequestState | undefined => {
+    if(num == 0) return 'OpenBid'
+
+    if(num == 1) return 'PendingValidation'
+
+    if(num == 2) return 'Validated'
+}
+
 export interface JobRequestData {
-    id?: string;
+    id?: number;
     requestorAddress: string;
     currentState: JobRequestState;
     dataSource: any;
 }
 
 interface OperatorSubmission {
-    jobRequestId: string;
+    jobRequestId: number;
     jobRequestName: string;
     apiUrl: string;
     dataResponse: string;
@@ -24,14 +32,14 @@ interface OperatorSubmission {
 interface OperatorBid {
     nodeWalletAddress: string;
     dataFeedFee: number;
-    jobRequestId: string;
-    submissions: OperatorSubmission;
-    id: string;
+    jobRequestId: number;
+    submission: OperatorSubmission;
+    id: number;
 }
 
 export interface IJobRequestStore {
     createJobRequest: (apiUrl: string) => Promise<boolean>;
-    getJobRequests: () => Promise<any[]>;
+    getJobRequests: () => Promise<JobRequestData[]>;
     getJobRequestById: (id: number) => Promise<JobRequestData | undefined>;
     getBidsOnJobRequest: (id: number) => Promise<OperatorBid[]>;
 
@@ -65,19 +73,54 @@ export class JobRequestStore implements IJobRequestStore {
     }
 
     public async createJobRequest(apiUrl: string): Promise<boolean> {
+        //const result = await this.jobRequestContract.createJobRequest(["HTTP","GET",apiUrl]);
         return true;
     }
 
-    public async getJobRequests(): Promise<any[]> {
-        return await this.jobRequestContract.getJobRequests(1,5);
+    public async getJobRequests(): Promise<JobRequestData[]> {
+        const result = await this.jobRequestContract.getJobRequests(0,5);
+        const jobReqs = result[0];
+        return jobReqs.map((jobRequest: {
+            [x: string]: any; id: { toString: () => string; }; requestor: any; currentState: any; 
+}) => {
+            const datasource = `https://${jobRequest.requestedDataSource.url}`
+            return {
+                id: parseInt(jobRequest.id.toString()),
+                requestorAddress: jobRequest.requestor,
+                currentState: getCurrentStateFromNumber(jobRequest.currentState),
+                dataSource: datasource
+            } as JobRequestData
+        })
     }
 
     public async getJobRequestById(id: number): Promise<JobRequestData | undefined> {
-        return;
+        const jobReq = await this.jobRequestContract.getJobRequestById(id);
+        const datasource = `https://${jobReq.requestedDataSource.url}`
+        return {
+            id: parseInt(jobReq.id.toString()),
+            requestorAddress: jobReq.requestor,
+            currentState: getCurrentStateFromNumber(jobReq.currentState),
+            dataSource: datasource
+        } as JobRequestData;
     }
 
     public async getBidsOnJobRequest(id: number): Promise<OperatorBid[]> {
-        return [];
+        const result = await this.jobRequestContract.getBidsOnJobRequest(id);
+        //@ts-ignore
+        return result.map((bid) => {
+            return {
+                dataFeedFee: parseInt(bid.dataFeedFee.toString()),
+                nodeWalletAddress: bid.nodeOperator,
+                jobRequestId: parseInt(bid.jobRequestId.toString()),
+                submission: {
+                    jobRequestId: bid.submission.jobRequestId,
+                    jobRequestName: bid.submission.jobRequestName,
+                    apiUrl: `https://${bid.submission.datasource.url}`,
+                    dataResponse: bid.submission.dataResponse
+                },
+                id: parseInt(bid.id.toString())
+            } as OperatorBid 
+        });
     }
 
     public async acceptBid(jobRequestId: number, operatorBid: number): Promise<void> {
@@ -96,22 +139,22 @@ class TestStore implements IJobRequestStore {
 
     constructor() {
         this.testJobRequestData = [
-            {id: "1", requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com'},
-            {id: "2", requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com'},
-            {id: "3", requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com'},
-            {id: "0", requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com'}
+            {id: 1, requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com'},
+            {id: 2, requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com'},
+            {id: 3, requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com'},
+            {id: 0, requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com'}
         ];
 
         this.testOperatorSubmissions = [
-            {jobRequestId: "1", jobRequestName: "test-source-job", apiUrl: 'https://test-source.com', dataResponse: 'test-data'},
-            {jobRequestId: "1", jobRequestName: "test-source-1-job", apiUrl: 'https://test-source1.com', dataResponse: 'test-data'},
-            {jobRequestId: "3", jobRequestName: "test-source-2-job", apiUrl: 'https://test-source2.com', dataResponse: 'test-data'}
+            {jobRequestId: 1, jobRequestName: "test-source-job", apiUrl: 'https://test-source.com', dataResponse: 'test-data'},
+            {jobRequestId: 1, jobRequestName: "test-source-1-job", apiUrl: 'https://test-source1.com', dataResponse: 'test-data'},
+            {jobRequestId: 3, jobRequestName: "test-source-2-job", apiUrl: 'https://test-source2.com', dataResponse: 'test-data'}
         ]
     }
 
     public async createJobRequest(apiUrl: string): Promise<boolean> {
         const nextIndex = this.testJobRequestData.length;
-        this.testJobRequestData.push({id: nextIndex.toString(), requestorAddress: '0x9W2T', currentState: 'OpenBid', dataSource: apiUrl })
+        this.testJobRequestData.push({id: nextIndex, requestorAddress: '0x9W2T', currentState: 'OpenBid', dataSource: apiUrl })
         return true;
     }
 
@@ -128,14 +171,14 @@ class TestStore implements IJobRequestStore {
 
     public async getBidsOnJobRequest(id: number): Promise<OperatorBid[]> {
         return this.testOperatorSubmissions
-                .filter(submission => submission.jobRequestId === id.toString())
+                .filter(submission => submission.jobRequestId === id)
                 .map((submission,index) => {
                     return {
                         nodeWalletAddress: "0x49Gae",
                         dataFeedFee: 0.25,
                         jobRequestId: submission.jobRequestId,
-                        submissions: submission,
-                        id: index.toString()
+                        submission: submission,
+                        id: index
                     } as OperatorBid
                 })
     }
