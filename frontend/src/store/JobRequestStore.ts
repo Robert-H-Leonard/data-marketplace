@@ -48,7 +48,7 @@ export class JobRequestStore implements IJobRequestStore {
     private static instance?: IJobRequestStore;
 
     private constructor() {
-        this.contractAddress = "0xF4E5B47Df038036995dF9c2baB5EED6CA5d060dC";
+        this.contractAddress = "0x63F8b4e803A631fAFC6482610D697Cd026e10419";
         this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba");
         this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, this.contractRpcProvider);
     }
