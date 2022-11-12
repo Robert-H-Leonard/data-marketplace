@@ -74,7 +74,7 @@ export class JobRequestStore implements IJobRequestStore {
 
     public async createJobRequest(apiUrl: string): Promise<boolean> {
         const result = await this.jobRequestContract.createJobRequest(["HTTP","GET",apiUrl]);
-        return true;
+        return result[0] as boolean;
     }
 
     public async getJobRequests(): Promise<JobRequestData[]> {

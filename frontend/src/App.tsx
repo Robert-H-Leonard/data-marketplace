@@ -13,21 +13,29 @@ import { chain, configureChains, createClient, useAccount, useSigner, WagmiConfi
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from "wagmi/providers/public";
 import { JobRequestStore, IJobRequestStore, JobRequestData } from './store/JobRequestStore';
+import { ethers } from 'ethers';
 
 
 function App() {
   const { address, isConnected } = useAccount();
   const { data: signer, isError, isLoading } = useSigner();
 
-  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true);
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(false, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
 
-  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([])
+  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([]);
+  const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
+
+  // Read methods on contract
+  const { getJobRequests, getJobRequestById, getBidsOnJobRequest } = jobRequestStore;
+
+  // write methods on contract
+  const { createJobRequest, acceptBid, submitBid } = jobRequestStore;
 
   useEffect(() => {
     const fetchJobRequest = async () => {
       const jobRequest = await jobRequestStore.getJobRequests();
-      // await jobRequestStore.createJobRequest("test-source-3.com")
       setJobRequest(jobRequest);
+      setDataSigned(signer as ethers.providers.JsonRpcSigner)
     }
 
     fetchJobRequest();
@@ -65,7 +73,6 @@ const WrappedApp = () => {
         http: `https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba`
       }),
     })
-      , publicProvider()
     ]
   );
 
