@@ -11,7 +11,7 @@ const { chains, provider } = configureChains(
     [jsonRpcProvider({
         rpc: (chain) =>
         ({
-            http: `[https://${chain.id}.example.com](https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba)`
+            http: `https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba`
         }),
     })
         , publicProvider()
