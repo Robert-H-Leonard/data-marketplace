@@ -55,25 +55,25 @@ export class JobRequestStore implements IJobRequestStore {
 
     private static instance?: IJobRequestStore;
 
-    private constructor() {
+    private constructor(signer?: providers.JsonRpcSigner) {
         this.contractAddress = "0x63F8b4e803A631fAFC6482610D697Cd026e10419";
         this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba");
-        this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, this.contractRpcProvider);
+        this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, signer ? signer : this.contractRpcProvider);
     }
 
-    public static getInstance(usingMockData: boolean = false): IJobRequestStore {
-        if(!this.instance) {
+    public static getInstance(usingMockData: boolean = false, signer?: providers.JsonRpcSigner): IJobRequestStore {
+        if(!this.instance || signer) {
             if(usingMockData) {
                 this.instance = new TestStore();
             } else {
-                this.instance = new JobRequestStore();
+                this.instance = new JobRequestStore(signer);
             }
         }
         return this.instance;
     }
 
     public async createJobRequest(apiUrl: string): Promise<boolean> {
-        //const result = await this.jobRequestContract.createJobRequest(["HTTP","GET",apiUrl]);
+        const result = await this.jobRequestContract.createJobRequest(["HTTP","GET",apiUrl]);
         return true;
     }
 
