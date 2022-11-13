@@ -16,6 +16,7 @@ import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { JobRequestDataWithBids } from '../store/JobRequestStore';
 
 
 
@@ -169,14 +170,19 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
+interface EnhancedTableProps {
+    jobRequests: JobRequestDataWithBids[]
+}
 
-export default function EnhancedTable() {
+export default function EnhancedTable(props: EnhancedTableProps) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const { jobRequests } = props;
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -220,10 +226,6 @@ export default function EnhancedTable() {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
-
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
     };
 
     const isSelected = (name) => selected.indexOf(name) !== -1;

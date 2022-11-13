@@ -12,7 +12,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, useAccount, useSigner, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from "wagmi/providers/public";
-import { JobRequestStore, IJobRequestStore, JobRequestData } from './store/JobRequestStore';
+import { JobRequestStore, IJobRequestStore, JobRequestDataWithBids } from './store/JobRequestStore';
 import { ethers } from 'ethers';
 
 
@@ -20,9 +20,9 @@ function App() {
   const { address, isConnected } = useAccount();
   const { data: signer, isError, isLoading } = useSigner();
 
-  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(false, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
 
-  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([]);
+  const [jobRequests, setJobRequests] = useState<JobRequestDataWithBids[]>([]);
   const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
 
   // Read methods on contract
@@ -33,12 +33,22 @@ function App() {
 
   useEffect(() => {
     const fetchJobRequest = async () => {
+      // Load request
       const jobRequest = await jobRequestStore.getJobRequests();
-      setJobRequest(jobRequest);
+      
+      // Load their bids
+      await jobRequest.map(async req => {
+        const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
+        setJobRequests([...jobRequests, {...req, bids: bids.length}])
+      })
+
       setDataSigned(signer as ethers.providers.JsonRpcSigner)
     }
 
-    fetchJobRequest();
+    if(jobRequestStore) {
+      fetchJobRequest();
+    }
+
   }, [])
 
   return (
@@ -54,7 +64,7 @@ function App() {
         </Helmet>
         <Header />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard jobRequests={jobRequests}/>} />
           <Route path="/createJob" element={<JobRequestForm />} />
           <Route path="/jobId" element={<JobInfo />} />
         </Routes>

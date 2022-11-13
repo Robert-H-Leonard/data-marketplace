@@ -8,11 +8,11 @@ import JobRequestAbi from "./jobRequestAbi.json";
 type JobRequestState = 'OpenBid' | 'PendingValidation' | 'Validated';
 
 const getCurrentStateFromNumber = (num: number): JobRequestState | undefined => {
-    if(num == 0) return 'OpenBid'
+    if(num === 0) return 'OpenBid'
 
-    if(num == 1) return 'PendingValidation'
+    if(num === 1) return 'PendingValidation'
 
-    if(num == 2) return 'Validated'
+    if(num === 2) return 'Validated'
 }
 
 export interface JobRequestData {
@@ -20,6 +20,11 @@ export interface JobRequestData {
     requestorAddress: string;
     currentState: JobRequestState;
     dataSource: any;
+    network: string;
+}
+
+export interface JobRequestDataWithBids extends JobRequestData {
+    bids: number;
 }
 
 interface OperatorSubmission {
@@ -116,7 +121,8 @@ export class JobRequestStore implements IJobRequestStore {
                     jobRequestId: bid.submission.jobRequestId,
                     jobRequestName: bid.submission.jobRequestName,
                     apiUrl: `https://${bid.submission.datasource.url}`,
-                    dataResponse: bid.submission.dataResponse
+                    dataResponse: bid.submission.dataResponse,
+                    network: "Goerli"
                 },
                 id: parseInt(bid.id.toString())
             } as OperatorBid 
@@ -143,10 +149,10 @@ class TestStore implements IJobRequestStore {
 
     constructor() {
         this.testJobRequestData = [
-            {id: 1, requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com'},
-            {id: 2, requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com'},
-            {id: 3, requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com'},
-            {id: 0, requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com'}
+            {id: 1, requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com', network: 'Goerli'},
+            {id: 2, requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com', network: 'Goerli'},
+            {id: 3, requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com', network: 'Goerli'},
+            {id: 0, requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com', network: 'Goerli'}
         ];
 
         this.testOperatorSubmissions = [
@@ -158,7 +164,7 @@ class TestStore implements IJobRequestStore {
 
     public async createJobRequest(apiUrl: string): Promise<boolean> {
         const nextIndex = this.testJobRequestData.length;
-        this.testJobRequestData.push({id: nextIndex, requestorAddress: '0x9W2T', currentState: 'OpenBid', dataSource: apiUrl })
+        this.testJobRequestData.push({id: nextIndex, requestorAddress: '0x9W2T', currentState: 'OpenBid', dataSource: apiUrl, network: 'Goerli' })
         return true;
     }
 

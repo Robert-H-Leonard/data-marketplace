@@ -2,10 +2,15 @@
 import { useState } from 'react'
 import EnhancedTable from '../components/dataTable'
 import FilterInput from '../components/FilterInput'
+import { JobRequestDataWithBids } from '../store/JobRequestStore'
 
-export default function Dashboard() {
+interface DashboardProps {
+    jobRequests: JobRequestDataWithBids[]
+}
 
+export default function Dashboard(props: DashboardProps) {
 
+    const { jobRequests } = props
     return (
         <div className='dashboard'>
 
@@ -13,7 +18,7 @@ export default function Dashboard() {
 
             <FilterInput />
 
-            <EnhancedTable />
+            <EnhancedTable jobRequests={jobRequests}/>
 
         </div>
     )
