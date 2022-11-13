@@ -55,8 +55,8 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="createJob" element={<JobRequestForm />} />
-          <Route path="jobId" element={<JobInfo />} />
+          <Route path="/createJob" element={<JobRequestForm />} />
+          <Route path="/jobId" element={<JobInfo />} />
         </Routes>
         <Footer />
       </div>

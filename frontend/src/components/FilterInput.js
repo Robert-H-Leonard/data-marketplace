@@ -5,11 +5,12 @@ import { TextField, Button } from '@mui/material'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import AddIcon from '@mui/icons-material/Add';
+import { Link } from "react-router-dom"
 
 
 
 export default function FilterInput() {
-    const { address, isConnected } = useAccount();
+    const { address } = useAccount();
     return (
         <div className='filter_input'>
             <div className='.filter_input_left'>
@@ -44,9 +45,11 @@ export default function FilterInput() {
                 address 
                     ? 
                         <div className='.filter_input_right'>
-                            <Button color="primary" size="medium" variant="contained" startIcon={<AddIcon/>}>
-                                Add Job
-                            </Button>
+                            <Link to="/createJob">
+                                <Button color="primary" size="medium" variant="contained" startIcon={<AddIcon/>}>
+                                    Add Job
+                                </Button>
+                            </Link>
                         </div>
                     :
                     <></>
