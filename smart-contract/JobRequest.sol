@@ -116,7 +116,7 @@ contract JobRequest is JobRequestInterface {
         override
         returns (bool)
     {
-        uint newId = numOfJobRequests + 1;
+        uint newId = numOfJobRequests;
 
         JobRequestData memory newRequestData = JobRequestData({
             id: newId, 
@@ -184,7 +184,7 @@ contract JobRequest is JobRequestInterface {
     {
         // check to see if job request exists
         require(
-            jobRequests[jobRequestId].id > 0,
+            jobRequests[jobRequestId].id >= 0,
             "Job request id doesn't exist."
         );
 
