@@ -49,8 +49,19 @@ header h1 {
 .filter_input {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   margin-left: 25px;
   margin-bottom: 40px;
+}
+
+.filter_input_left {
+  display: flex;
+  flex-direction: row;
+}
+
+.filter_input_right {
+  display: flex;
+  flex-direction: row;
 }
 
 .filter_input .search_input {
