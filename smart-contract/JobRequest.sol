@@ -15,9 +15,14 @@ enum JobRequestState {
 // https://docs.chain.link/docs/jobs/
 
 struct Datasource {
-    string requestType; // Should probs be an enum. Valid values are "http", ...
-    string method; // GET, POST, etc..
     string url; // url to get data
+    string name;
+    string auth;
+}
+
+struct DataDescription {
+    string dataFormat;
+    string description;
 }
 
 struct OperatorSubmission {
@@ -40,6 +45,7 @@ struct JobRequestData {
     address requestor; // address of person requesting data feed
     Datasource requestedDataSource;
     JobRequestState currentState;
+    DataDescription description;
 }
 
 interface JobRequestInterface {
@@ -58,7 +64,7 @@ interface JobRequestInterface {
 
     function getBidsOnJobRequest(uint jobRequestId) external view returns (OperatorBid[] memory);
 
-    function createJobRequest(Datasource calldata dataSource)
+    function createJobRequest(string calldata _url, string calldata _name, string calldata _auth, string calldata _dataFormat, string calldata _description)
         external
         returns (bool);
 
@@ -111,17 +117,21 @@ contract JobRequest is JobRequestInterface {
     mapping(uint256 => OperatorBid) private bidsPendingValidation;
     uint256 public numOfBidsPendingValidation;
 
-    function createJobRequest(Datasource memory dataSource)
+    function createJobRequest(string calldata _url, string calldata _name, string calldata _auth, string calldata _dataFormat, string calldata _description)
         external
         override
         returns (bool)
     {
         uint newId = numOfJobRequests;
 
+        Datasource memory ds = Datasource({ url: _url, name: _name, auth: _auth });
+        DataDescription memory dd = DataDescription({ dataFormat: _dataFormat, description: _description});
+
         JobRequestData memory newRequestData = JobRequestData({
             id: newId, 
             requestor: msg.sender,
-            requestedDataSource: dataSource,
+            requestedDataSource: ds,
+            description: dd,
             currentState: JobRequestState.OpenBid
         });
 

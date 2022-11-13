@@ -1,16 +1,17 @@
 
-import { useState } from 'react'
+import { Skeleton } from '@mui/material';
 import EnhancedTable from '../components/dataTable'
 import FilterInput from '../components/FilterInput'
 import { JobRequestDataWithBids } from '../store/JobRequestStore'
 
 interface DashboardProps {
-    jobRequests: JobRequestDataWithBids[]
+    jobRequests: JobRequestDataWithBids[];
+    isLoading: boolean
 }
 
 export default function Dashboard(props: DashboardProps) {
 
-    const { jobRequests } = props
+    const { jobRequests, isLoading } = props
     return (
         <div className='dashboard'>
 
@@ -18,7 +19,13 @@ export default function Dashboard(props: DashboardProps) {
 
             <FilterInput />
 
-            <EnhancedTable jobRequests={jobRequests}/>
+            { isLoading 
+                ? 
+                    <Skeleton>
+                      <EnhancedTable jobRequests={jobRequests}/>  
+                    </Skeleton>
+                : 
+                    <EnhancedTable jobRequests={jobRequests}/>}
 
         </div>
     )

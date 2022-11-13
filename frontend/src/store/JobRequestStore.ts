@@ -3,6 +3,7 @@
  * 2. Use hooks for interacting with store
  */
 import { Contract, ethers, providers } from "ethers";
+import { JobRequestSubmission } from "../pages/JobRequestForm";
 import JobRequestAbi from "./jobRequestAbi.json";
 
 type JobRequestState = 'OpenBid' | 'PendingValidation' | 'Validated';
@@ -21,6 +22,11 @@ export interface JobRequestData {
     currentState: JobRequestState;
     dataSource: any;
     network: string;
+    name: string;
+    auth: string;
+    dataFormat: string;
+    description: string;
+    validatedFee?: number;
 }
 
 export interface JobRequestDataWithBids extends JobRequestData {
@@ -43,7 +49,7 @@ interface OperatorBid {
 }
 
 export interface IJobRequestStore {
-    createJobRequest: (apiUrl: string) => Promise<boolean>;
+    createJobRequest: (jobRequestSubmission: JobRequestSubmission) => Promise<boolean>;
     getJobRequests: () => Promise<JobRequestData[]>;
     getJobRequestById: (id: number) => Promise<JobRequestData | undefined>;
     getBidsOnJobRequest: (id: number) => Promise<OperatorBid[]>;
@@ -61,39 +67,42 @@ export class JobRequestStore implements IJobRequestStore {
     private static instance?: IJobRequestStore;
 
     private constructor(signer?: providers.JsonRpcSigner) {
-        this.contractAddress = "0x63F8b4e803A631fAFC6482610D697Cd026e10419";
+        this.contractAddress = "0x0D6a65dc9A103a6A59f591a5DBcd2704F4c3BDf3";
         this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba");
         this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, signer ? signer : this.contractRpcProvider);
     }
 
     public static getInstance(usingMockData: boolean = false, signer?: providers.JsonRpcSigner): IJobRequestStore {
         if(!this.instance || signer) {
-            if(usingMockData) {
-                this.instance = new TestStore();
-            } else {
-                this.instance = new JobRequestStore(signer);
-            }
+            this.instance = new JobRequestStore(signer);
         }
         return this.instance;
     }
 
-    public async createJobRequest(apiUrl: string): Promise<boolean> {
-        const result = await this.jobRequestContract.createJobRequest(["HTTP","GET",apiUrl]);
-        return result[0] as boolean;
+    public async createJobRequest(jobRequestSubmission: JobRequestSubmission): Promise<boolean> {
+        // Send name
+        const { name, auth, dataFormat, dataDescription, datasource} = jobRequestSubmission;
+        await this.jobRequestContract.createJobRequest(datasource,name,auth,dataFormat,dataDescription);
+        return true;
     }
 
     public async getJobRequests(): Promise<JobRequestData[]> {
-        const result = await this.jobRequestContract.getJobRequests(0,5);
+        const result = await this.jobRequestContract.getJobRequests(0,10);
         const jobReqs = result[0];
         return jobReqs.map((jobRequest: {
             [x: string]: any; id: { toString: () => string; }; requestor: any; currentState: any; 
 }) => {
-            const datasource = `https://${jobRequest.requestedDataSource.url}`
+            const datasource = `https://${jobRequest.requestedDataSource[0]}`
             return {
                 id: parseInt(jobRequest.id.toString()),
                 requestorAddress: jobRequest.requestor,
                 currentState: getCurrentStateFromNumber(jobRequest.currentState),
-                dataSource: datasource
+                dataSource: datasource,
+                name: jobRequest.requestedDataSource[1],
+                auth: jobRequest.requestedDataSource[2],
+                dataFormat: jobRequest.requestedDataSource[3],
+                description: jobRequest.requestedDataSource[4],
+                network: "Goerli"
             } as JobRequestData
         })
     }
@@ -105,7 +114,11 @@ export class JobRequestStore implements IJobRequestStore {
             id: parseInt(jobReq.id.toString()),
             requestorAddress: jobReq.requestor,
             currentState: getCurrentStateFromNumber(jobReq.currentState),
-            dataSource: datasource
+            dataSource: datasource,
+            name: jobReq.requestedDataSource.name,
+            auth: jobReq.requestedDataSource.auth,
+            dataFormat: jobReq.requestedDataSource.dataFormat,
+            description: jobReq.requestedDataSource.description
         } as JobRequestData;
     }
 
@@ -141,67 +154,4 @@ export class JobRequestStore implements IJobRequestStore {
         return;
     }
 
-}
-
-class TestStore implements IJobRequestStore {
-    private testJobRequestData: JobRequestData[];
-    private testOperatorSubmissions: OperatorSubmission[];
-
-    constructor() {
-        this.testJobRequestData = [
-            {id: 1, requestorAddress: "0x34S52", currentState: 'OpenBid', dataSource: 'https://test-source.com', network: 'Goerli'},
-            {id: 2, requestorAddress: "0xA4Y2d", currentState: 'OpenBid', dataSource: 'https://test-source1.com', network: 'Goerli'},
-            {id: 3, requestorAddress: "0xPW62D", currentState: 'PendingValidation', dataSource: 'https://test-source2.com', network: 'Goerli'},
-            {id: 0, requestorAddress: "0x9W2TA", currentState: 'OpenBid', dataSource: 'https://test-source3.com', network: 'Goerli'}
-        ];
-
-        this.testOperatorSubmissions = [
-            {jobRequestId: 1, jobRequestName: "test-source-job", apiUrl: 'https://test-source.com', dataResponse: 'test-data'},
-            {jobRequestId: 1, jobRequestName: "test-source-1-job", apiUrl: 'https://test-source1.com', dataResponse: 'test-data'},
-            {jobRequestId: 3, jobRequestName: "test-source-2-job", apiUrl: 'https://test-source2.com', dataResponse: 'test-data'}
-        ]
-    }
-
-    public async createJobRequest(apiUrl: string): Promise<boolean> {
-        const nextIndex = this.testJobRequestData.length;
-        this.testJobRequestData.push({id: nextIndex, requestorAddress: '0x9W2T', currentState: 'OpenBid', dataSource: apiUrl, network: 'Goerli' })
-        return true;
-    }
-
-    public async getJobRequests(): Promise<JobRequestData[]> {
-        return this.testJobRequestData
-    }
-
-    public async getJobRequestById(id: number): Promise<JobRequestData | undefined> {
-        if(id < this.testJobRequestData.length) {
-            return this.testJobRequestData[id] 
-        }
-        return;
-    }
-
-    public async getBidsOnJobRequest(id: number): Promise<OperatorBid[]> {
-        return this.testOperatorSubmissions
-                .filter(submission => submission.jobRequestId === id)
-                .map((submission,index) => {
-                    return {
-                        nodeWalletAddress: "0x49Gae",
-                        dataFeedFee: 0.25,
-                        jobRequestId: submission.jobRequestId,
-                        submission: submission,
-                        id: index
-                    } as OperatorBid
-                })
-    }
-
-    public async acceptBid(jobRequestId: number, operatorBidId: number): Promise<void> {
-        if(jobRequestId < this.testJobRequestData.length) {
-            this.testJobRequestData[jobRequestId].currentState = 'PendingValidation'
-        }
-    }
-
-    public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number): Promise<void> {
-        if(jobRequestId < this.testJobRequestData.length) {
-            this.testOperatorSubmissions.push(operatorSubmission)
-        }
-    }
 }
