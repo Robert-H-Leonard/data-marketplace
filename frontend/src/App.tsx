@@ -17,39 +17,63 @@ import { ethers } from 'ethers';
 
 
 function App() {
-  const { address, isConnected } = useAccount();
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer } = useSigner();
 
   const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(false, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
 
   const [jobRequests, setJobRequests] = useState<JobRequestDataWithBids[]>([]);
   const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
-
-  // Read methods on contract
-  const { getJobRequests, getJobRequestById, getBidsOnJobRequest } = jobRequestStore;
-
-  // write methods on contract
-  const { createJobRequest, acceptBid, submitBid } = jobRequestStore;
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      const fetchJobRequest = async () => {
+        const loadedRequest: JobRequestDataWithBids[] = []
+        // Load request
+        const jobRequest = await jobRequestStore.getJobRequests();
+        
+        // Load their bids
+        for(const req of jobRequest) {
+          const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
+          loadedRequest.push({ ...req, bids: bids?.length})
+        }
+  
+  
+        setJobRequests(loadedRequest);
+  
+        setDataSigned(signer as ethers.providers.JsonRpcSigner)
+        setIsLoading(false);
+      }
+  
+      if(jobRequestStore) {
+        fetchJobRequest();
+      }
+    }, 6000);
+
     const fetchJobRequest = async () => {
+      const loadedRequest: JobRequestDataWithBids[] = []
       // Load request
       const jobRequest = await jobRequestStore.getJobRequests();
       
       // Load their bids
-      await jobRequest.map(async req => {
+      for(const req of jobRequest) {
         const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
-        setJobRequests([...jobRequests, {...req, bids: bids.length}])
-      })
+        loadedRequest.push({ ...req, bids: bids?.length})
+      }
 
+
+      setJobRequests(loadedRequest);
       setDataSigned(signer as ethers.providers.JsonRpcSigner)
+      setIsLoading(false);
     }
 
     if(jobRequestStore) {
       fetchJobRequest();
+      setIsLoading(false);
     }
-
-  }, [])
+  
+    return () => clearInterval(interval);
+  });
 
   return (
     <BrowserRouter>
@@ -64,8 +88,8 @@ function App() {
         </Helmet>
         <Header />
         <Routes>
-          <Route path="/" element={<Dashboard jobRequests={jobRequests}/>} />
-          <Route path="/createJob" element={<JobRequestForm />} />
+          <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isLoading}/>} />
+          <Route path="/createJob" element={<JobRequestForm jobRequestStore={jobRequestStore as JobRequestStore}/>} />
           <Route path="/jobId" element={<JobInfo />} />
         </Routes>
         <Footer />

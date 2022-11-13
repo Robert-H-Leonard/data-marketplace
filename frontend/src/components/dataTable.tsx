@@ -254,20 +254,20 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                         <TableBody>
                             {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(getComparator(order, orderBy)).slice() */}
-                            {stableSort(rows, getComparator(order, orderBy))
+                            {stableSort(jobRequests, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
+                                .map((jobRequest, index) => {
+                                    const isItemSelected = isSelected(jobRequest.id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.id)}
+                                            onClick={(event) => handleClick(event, jobRequest.id)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={row.id}
+                                            key={jobRequest.id}
                                             selected={isItemSelected}
                                         >
                                             <TableCell align="right">
@@ -275,12 +275,12 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                                     label={index}
                                                     control={<Checkbox checked={isItemSelected} />} />
                                             </TableCell>
-                                            <TableCell align="right" padding='normal'>{row.owner}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.name}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.network}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.fee}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.bids}</TableCell>
-                                            <TableCell align="right" padding='normal'><Chip label={row.accountStatus} color={row.accountStatus === 'Open Bid' ? 'primary' : row.accountStatus === 'Fulfilled' ? 'success' : 'warning'} /></TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.requestorAddress}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.bids}</TableCell>
+                                            <TableCell align="right" padding='normal'><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
                                             <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
                                         </TableRow>
                                     );

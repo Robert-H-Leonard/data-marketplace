@@ -1,5 +1,62 @@
 [
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "operatorBidId",
+				"type": "uint256"
+			}
+		],
+		"name": "acceptBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_auth",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_dataFormat",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			}
+		],
+		"name": "createJobRequest",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -107,42 +164,63 @@
 				"type": "uint256"
 			},
 			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "jobRequestId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "jobRequestName",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "url",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "auth",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Datasource",
+						"name": "datasource",
+						"type": "tuple"
+					},
+					{
+						"internalType": "string",
+						"name": "dataResponse",
+						"type": "string"
+					}
+				],
+				"internalType": "struct OperatorSubmission",
+				"name": "operatorSubmission",
+				"type": "tuple"
+			},
+			{
 				"internalType": "uint256",
-				"name": "operatorBidId",
+				"name": "dataFee",
 				"type": "uint256"
 			}
 		],
-		"name": "acceptBid",
+		"name": "submitBid",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "requestType",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "method",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "url",
-						"type": "string"
-					}
-				],
-				"internalType": "struct Datasource",
-				"name": "dataSource",
-				"type": "tuple"
-			}
-		],
-		"name": "createJobRequest",
+		"inputs": [],
+		"name": "validatePendingBids",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -196,17 +274,17 @@
 								"components": [
 									{
 										"internalType": "string",
-										"name": "requestType",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "method",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
 										"name": "url",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "name",
+										"type": "string"
+									},
+									{
+										"internalType": "string",
+										"name": "auth",
 										"type": "string"
 									}
 								],
@@ -264,17 +342,17 @@
 						"components": [
 							{
 								"internalType": "string",
-								"name": "requestType",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "method",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
 								"name": "url",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "auth",
 								"type": "string"
 							}
 						],
@@ -286,6 +364,23 @@
 						"internalType": "enum JobRequestState",
 						"name": "currentState",
 						"type": "uint8"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "dataFormat",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "description",
+								"type": "string"
+							}
+						],
+						"internalType": "struct DataDescription",
+						"name": "description",
+						"type": "tuple"
 					}
 				],
 				"internalType": "struct JobRequestData",
@@ -327,17 +422,17 @@
 						"components": [
 							{
 								"internalType": "string",
-								"name": "requestType",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "method",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
 								"name": "url",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "auth",
 								"type": "string"
 							}
 						],
@@ -349,6 +444,23 @@
 						"internalType": "enum JobRequestState",
 						"name": "currentState",
 						"type": "uint8"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "dataFormat",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "description",
+								"type": "string"
+							}
+						],
+						"internalType": "struct DataDescription",
+						"name": "description",
+						"type": "tuple"
 					}
 				],
 				"internalType": "struct JobRequestData[]",
@@ -388,17 +500,17 @@
 				"components": [
 					{
 						"internalType": "string",
-						"name": "requestType",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "method",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
 						"name": "url",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "auth",
 						"type": "string"
 					}
 				],
@@ -410,6 +522,23 @@
 				"internalType": "enum JobRequestState",
 				"name": "currentState",
 				"type": "uint8"
+			},
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "dataFormat",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					}
+				],
+				"internalType": "struct DataDescription",
+				"name": "description",
+				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",
@@ -452,81 +581,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "jobRequestId",
-				"type": "uint256"
-			},
-			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "jobRequestId",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "jobRequestName",
-						"type": "string"
-					},
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "requestType",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "method",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "url",
-								"type": "string"
-							}
-						],
-						"internalType": "struct Datasource",
-						"name": "datasource",
-						"type": "tuple"
-					},
-					{
-						"internalType": "string",
-						"name": "dataResponse",
-						"type": "string"
-					}
-				],
-				"internalType": "struct OperatorSubmission",
-				"name": "operatorSubmission",
-				"type": "tuple"
-			},
-			{
-				"internalType": "uint256",
-				"name": "dataFee",
-				"type": "uint256"
-			}
-		],
-		"name": "submitBid",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "validatePendingBids",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

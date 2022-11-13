@@ -1,3 +1,3 @@
-Current contract address is: `0x63F8b4e803A631fAFC6482610D697Cd026e10419`
+Current contract address is: `0x0D6a65dc9A103a6A59f591a5DBcd2704F4c3BDf3`
 
 
