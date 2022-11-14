@@ -7,8 +7,23 @@ import { TextField } from '@mui/material'
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button'
 import { useLocation } from "react-router";
+import {styled } from '@mui/material/styles';
+import { useState } from 'react';
 
-function openToBidView({requestor, info}) {
+const StyledTextField = styled(TextField)({
+    '& label.Mui-focused': {
+        color: 'rgba(0, 0, 0, 0.54)',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderWidth: '1px',
+            borderColor: 'rgba(0, 0, 0, 0.54)',
+        },
+    }
+});
+
+function openToBidView({ requestor, info }) {
+
     return (
         <section className='open_to_bid'>
             {requestor &&
@@ -24,7 +39,7 @@ function openToBidView({requestor, info}) {
                         <TextField
                             label="New Bid"
                             id="outlined-start-adornment"
-                            type = "number"
+                            type="number"
                             sx={{ m: 1, width: '25ch' }}
                             InputProps={{
                                 inputMode: 'numeric',
@@ -44,37 +59,61 @@ function openToBidView({requestor, info}) {
     )
 }
 
-function validateView() {
+function validateView(bidder) {
     return (
-        <section className='pending_view'>Data needed for automation submitted through a form</section>
+        <section>
+            {bidder &&
+                <form className='pending_view_input'>
+                    <StyledTextField
+                        className='text_input'
+                        label="Oracle Address"
+                        helperText="Enter address of the Oracle contract"
+                        fullWidth={true}
+                        focused
+                    />
+                    <StyledTextField
+                        className='text_input'
+                        label="Job ID"
+                        helperText="Enter the relevant job ID found in the Node Operators UI"
+                        fullWidth={true}
+                        focused
+                    />
+                    <Button variant="contained">Submit</Button>
+                </form>}
+                {!bidder && <p className='pending_view'> Job Request is currently pending ...</p>}
+        </section>
     )
 }
 
 function fufilledView() {
-    return( 
-    <div className='fufilled_view'>
-        <h3>Validation Example</h3>
-        <TextField disabled
-            id="outlined-read-only-input"
-            label="Returned Value"
-            defaultValue="uint256: 53"
-            fullWidth={true}
-            InputProps={{
-                readOnly: true,
-            }}
-        />
-    </div>)
+    return (
+        <div className='fufilled_view'>
+            <h3>Validation Example</h3>
+            <TextField disabled
+                id="outlined-read-only-input"
+                label="Returned Value"
+                defaultValue="uint256: 53"
+                fullWidth={true}
+                InputProps={{
+                    readOnly: true,
+                }}
+            />
+        </div>)
 
 }
 
 export default function JobInfo() {
     let data = useLocation();
     console.log(data)
-    const [jobStatus, setStatus] = 'blah'
+    // const [jobStatus, setStatus] = useState('Open to Bid')
+    // const [jobStatus, setStatus] = useState('Validate')
+    const [jobStatus, setStatus] = useState('Fufilled')
     const steps = ['Open to Bid', 'Validate', 'Fufilled']
+    console.log(jobStatus);
+    console.log(steps.indexOf(jobStatus))
     return (
         <div className="job_info_page">
-            <Stepper className='stepper' activeStep={1} alternativeLabel>
+            <Stepper className='stepper' activeStep={steps.indexOf(jobStatus)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
@@ -91,7 +130,7 @@ export default function JobInfo() {
                     <Chip className='chip' label="uint256" />
                 </div>
                 {jobStatus === 'Open to Bid' && openToBidView()}
-                {jobStatus === 'Validate' && validateView()}
+                {jobStatus === 'Validate' && validateView("bidder")}
                 {jobStatus === 'Fufilled' && fufilledView()}
             </div>
         </div>

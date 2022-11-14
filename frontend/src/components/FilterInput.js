@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel'
 import { TextField } from '@mui/material'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
 
 
 
@@ -39,11 +40,11 @@ export default function FilterInput() {
                     </Select>
                 </FormControl>
 
-                <img  className="filterIcon" src='filterIcon.svg' alt='filterIcon' />
-
 
             </form>
-
+            <div className='button_row'>
+                <Button variant="contained"> + Add Job </Button>
+            </div>
 
         </div>
     )

@@ -10,13 +10,9 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
-import { Link, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate} from "react-router-dom";
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -52,43 +48,36 @@ const headCells = [
     {
         id: 'id',
         numeric: true,
-        disablePadding: false,
         label: 'ID',
     },
     {
         id: 'owner',
         numeric: false,
-        disablePadding: false,
         label: 'Owner',
     },
     {
         id: 'name',
         numeric: false,
-        disablePadding: false,
         label: 'Name',
     },
     {
         id: 'network',
         numeric: false,
-        disablePadding: false,
         label: 'Network',
     },
     {
         id: 'fee',
         numeric: true,
-        disablePadding: false,
         label: 'Fee',
     },
     {
         id: 'bids',
         numeric: true,
-        disablePadding: false,
         label: 'Bids',
     },
     {
         id: 'accountStatus',
         numeric: false,
-        disablePadding: false,
         label: 'Account status',
     },
 ];
@@ -106,7 +95,7 @@ function EnhancedTableHead(props) {
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={'right'}
+                        align={'center'}
                         padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
@@ -146,6 +135,12 @@ export default function EnhancedTable({ jobs }) {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [info, setInfo] = React.useState(jobs);
+
+    const navigate = useNavigate()
+    const handleClick = (row) => { 
+        navigate(`/job/${row.id}`)
+    }
 
     function createData({ id, requestorAddress, currentState }) {
         let owner = requestorAddress
@@ -235,21 +230,20 @@ export default function EnhancedTable({ jobs }) {
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
-                                        <Link to={`/job/${row.id}`} state={{info:row}}>
                                         <TableRow
                                             hover
                                             aria-checked={isItemSelected}
+                                            onClick={()=> {handleClick(row)}}
                                             tabIndex={-1}
                                             key={row.id}>
-                                            <TableCell align="right" padding='normal'>{row.id}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.owner}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.name}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.network}</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.fee} LINK</TableCell>
-                                            <TableCell align="right" padding='normal'>{row.bids}</TableCell>
-                                            <TableCell align="right" padding='normal'><Chip label={row.accountStatus} color={row.accountStatus === 'Open Bid' ? 'primary' : row.accountStatus === 'Fulfilled' ? 'success' : 'warning'} /></TableCell>
+                                            <TableCell align="center">{row.id}</TableCell>
+                                            <TableCell align="center">{row.owner}</TableCell>
+                                            <TableCell align="center">{row.name}</TableCell>
+                                            <TableCell align="center">{row.network}</TableCell>
+                                            <TableCell align="center">{row.fee} LINK</TableCell>
+                                            <TableCell align="center">{row.bids}</TableCell>
+                                            <TableCell align="center"><Chip label={row.accountStatus} color={row.accountStatus === 'Open Bid' ? 'primary' : row.accountStatus === 'Fulfilled' ? 'success' : 'warning'} /></TableCell>
                                         </TableRow>
-                                        </Link>
                                     );
                                 })}
                             {emptyRows > 0 && (
