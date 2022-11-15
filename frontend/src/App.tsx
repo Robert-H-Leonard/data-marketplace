@@ -91,7 +91,7 @@ function App() {
         </Helmet>
         <Header />
         <Routes>
-          <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isLoading}/>} />
+          <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isInitLoad}/>} />
           <Route path="/createJob" element={<JobRequestForm jobRequestStore={jobRequestStore as JobRequestStore}/>} />
           <Route path="/jobRequest/:id" element={<JobInfo jobRequestStore={jobRequestStore}/>} />
         </Routes>
