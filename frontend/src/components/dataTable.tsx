@@ -13,6 +13,27 @@ import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
 import { Link, useNavigate} from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { JobRequestDataWithBids } from '../store/JobRequestStore';
+import { Checkbox, FormControlLabel } from '@mui/material';
+
+
+
+function createData(owner, name, network, fee, bids, accountStatus) {
+    return {
+        owner,
+        name,
+        network,
+        fee,
+        bids,
+        accountStatus
+    };
+}
+
+const rows = [
+    createData('vitalik.eth', 'Price of corn', 'Optimism', '', 2, 'Open Bid'),
+];
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -127,24 +148,30 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
+interface EnhancedTableProps {
+    jobRequests: JobRequestDataWithBids[]
+}
 
-export default function EnhancedTable({ jobs }) {
+export default function EnhancedTable(props: EnhancedTableProps) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [info, setInfo] = React.useState(jobs);
+
+    const { jobRequests } = props;
+    
+    const [info, setInfo] = React.useState(jobRequests);
 
     const navigate = useNavigate()
-    const handleClick = (row) => { 
+    const handleRowClick = (row) => { 
         navigate(`/job/${row.id}`)
     }
 
-    function createData({ id, requestorAddress, currentState }) {
-        let owner = requestorAddress
-        let accountStatus = currentState.toLowerCase()
+    function createData(jobRequest: JobRequestDataWithBids) {
+        let owner = jobRequest.requestorAddress;
+        let accountStatus = jobRequest.currentState.toLowerCase();
         if (accountStatus.includes('open')) {
             accountStatus = 'Open Bid'
         } else if (accountStatus.includes(`fulfilled`)) {
@@ -157,7 +184,7 @@ export default function EnhancedTable({ jobs }) {
         let network = `(Goerli) Ethereum`
 
         return {
-            id,
+            id: jobRequest.id,
             owner,
             accountStatus,
             fee,
@@ -166,8 +193,7 @@ export default function EnhancedTable({ jobs }) {
         };
     }
 
-    const rows = jobs.map(job => createData(job))
-
+    const rows = jobRequests.map(job => createData(job))
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -177,7 +203,7 @@ export default function EnhancedTable({ jobs }) {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.name);
+            const newSelected = rows.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
@@ -191,10 +217,6 @@ export default function EnhancedTable({ jobs }) {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
-
-    const handleChangeDense = (event) => {
-        setDense(event.target.checked);
     };
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -223,26 +245,34 @@ export default function EnhancedTable({ jobs }) {
                         <TableBody>
                             {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.sort(getComparator(order, orderBy)).slice() */}
-                            {stableSort(rows, getComparator(order, orderBy))
+                            {stableSort(jobRequests, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
+                                .map((jobRequest: JobRequestDataWithBids, index) => {
+                                    const isItemSelected = isSelected(jobRequest.id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
+                                            onClick={(event) => handleRowClick(event)}
+                                            role="checkbox"
                                             aria-checked={isItemSelected}
-                                            onClick={()=> {handleClick(row)}}
                                             tabIndex={-1}
-                                            key={row.id}>
-                                            <TableCell align="center">{row.id}</TableCell>
-                                            <TableCell align="center">{row.owner}</TableCell>
-                                            <TableCell align="center">{row.name}</TableCell>
-                                            <TableCell align="center">{row.network}</TableCell>
-                                            <TableCell align="center">{row.fee} LINK</TableCell>
-                                            <TableCell align="center">{row.bids}</TableCell>
-                                            <TableCell align="center"><Chip label={row.accountStatus} color={row.accountStatus === 'Open Bid' ? 'primary' : row.accountStatus === 'Fulfilled' ? 'success' : 'warning'} /></TableCell>
+                                            key={jobRequest.id}
+                                            selected={isItemSelected}
+                                        >
+                                            <TableCell align="right">
+                                                <FormControlLabel
+                                                    label={index}
+                                                    control={<Checkbox checked={isItemSelected} />} />
+                                            </TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.requestorAddress}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.bids}</TableCell>
+                                            <TableCell align="right" padding='normal'><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
+                                            <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
                                         </TableRow>
                                     );
                                 })}

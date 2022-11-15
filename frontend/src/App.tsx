@@ -9,22 +9,104 @@ import JobInfo from './pages/JobInfo';
 import { BrowserRouter, NavLink, Routes, Route } from 'react-router-dom';
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { chain, configureChains, createClient, useAccount, useSigner, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from "wagmi/providers/public";
-import { JobRequestStore, IJobRequestStore, JobRequestData } from './store/JobRequestStore';
+import { JobRequestStore, IJobRequestStore, JobRequestDataWithBids } from './store/JobRequestStore';
+import { ethers } from 'ethers';
 
 
 function App() {
+  const { data: signer } = useSigner();
+
+  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(false, signer ? signer as ethers.providers.JsonRpcSigner : undefined);
+
+  const [jobRequests, setJobRequests] = useState<JobRequestDataWithBids[]>([]);
+  const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const fetchJobRequest = async () => {
+        const loadedRequest: JobRequestDataWithBids[] = []
+        // Load request
+        const jobRequest = await jobRequestStore.getJobRequests();
+        
+        // Load their bids
+        for(const req of jobRequest) {
+          const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
+          loadedRequest.push({ ...req, bids: bids?.length})
+        }
+  
+  
+        setJobRequests(loadedRequest);
+  
+        setDataSigned(signer as ethers.providers.JsonRpcSigner)
+        setIsLoading(false);
+      }
+  
+      if(jobRequestStore) {
+        fetchJobRequest();
+      }
+    }, 6000);
+
+    const fetchJobRequest = async () => {
+      const loadedRequest: JobRequestDataWithBids[] = []
+      // Load request
+      const jobRequest = await jobRequestStore.getJobRequests();
+      
+      // Load their bids
+      for(const req of jobRequest) {
+        const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
+        loadedRequest.push({ ...req, bids: bids?.length})
+      }
+
+
+      setJobRequests(loadedRequest);
+      setDataSigned(signer as ethers.providers.JsonRpcSigner)
+      setIsLoading(false);
+    }
+
+    if(jobRequestStore) {
+      fetchJobRequest();
+      setIsLoading(false);
+    }
+  
+    return () => clearInterval(interval);
+  });
+
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <Helmet>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+          <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+          <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,400;1,300&display=swap" rel="stylesheet"></link>
+          <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100&display=swap" rel="stylesheet" />
+          <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet"></link>
+        </Helmet>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isLoading}/>} />
+          <Route path="/createJob" element={<JobRequestForm jobRequestStore={jobRequestStore as JobRequestStore}/>} />
+          <Route path="/jobId" element={<JobInfo />} />
+        </Routes>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
+}
+
+const WrappedApp = () => {
   const { chains, provider } = configureChains(
-    [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+    [chain.goerli],
     [jsonRpcProvider({
       rpc: (chain) =>
       ({
-        http: `(https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba)`
+        http: `https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba`
       }),
     })
-      , publicProvider()
     ]
   );
 
@@ -39,46 +121,13 @@ function App() {
     provider
   });
 
-  const jobRequestStore: IJobRequestStore = JobRequestStore.getInstance(true);
-
-  const [jobRequest, setJobRequest] = useState<JobRequestData[]>([])
-
-  useEffect(() => {
-    const fetchJobRequest = async () => {
-      const jobRequest = await jobRequestStore.getJobRequests();
-      setJobRequest(jobRequest);
-
-      console.log(`Found job request: ${JSON.stringify(jobRequest)}`)
-    }
-
-    fetchJobRequest();
-  }, [])
-
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <Helmet>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-          <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
-          <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100;0,200;0,400;1,300&display=swap" rel="stylesheet"></link>
-          <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100&display=swap" rel="stylesheet" />
-          <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet"></link>
-        </Helmet>
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={chains}>
-            <Header />
-            <Routes>
-              <Route path="/" element={<Dashboard jobs={jobRequest}/>} />
-              <Route path="createJob" element={<JobRequestForm />} />
-              <Route path="/job/:id" element={<JobInfo/>} />
-            </Routes>
-            <Footer />
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </div>
-    </BrowserRouter>
-  );
+  return(
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains}>
+        <App/>
+      </RainbowKitProvider>
+    </WagmiConfig>
+  )
 }
 
-export default App;
+export default WrappedApp;

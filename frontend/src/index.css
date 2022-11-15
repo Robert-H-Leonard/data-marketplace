@@ -55,6 +55,7 @@ header h1 {
 .filter_input {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   margin-left: 25px;
   margin-bottom: 40px;
   width: 100%;
@@ -67,12 +68,22 @@ header h1 {
   width: calc(39.43% + 20px) ;
 }
 
+.filter_input_left {
+  display: flex;
+  flex-direction: row;
+}
+
+.filter_input_right {
+  display: flex;
+  flex-direction: row;
+}
+
 .filter_input .search_input {
   width: 300px;
 }
 
 .filter_input .status_input {
-  width: 180px;
+  width: 450px;
   text-align: left;
 }
 
