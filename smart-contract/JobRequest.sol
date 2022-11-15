@@ -25,6 +25,11 @@ struct DataDescription {
     string description;
 }
 
+struct DataDescription {
+    string dataFormat;
+    string description;
+}
+
 // Simplify
 struct OperatorSubmission {
     string jobId;

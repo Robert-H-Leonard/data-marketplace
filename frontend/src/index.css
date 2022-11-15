@@ -79,6 +79,16 @@ header h1 {
   flex-direction: row;
 }
 
+.filter_input_left {
+  display: flex;
+  flex-direction: row;
+}
+
+.filter_input_right {
+  display: flex;
+  flex-direction: row;
+}
+
 .filter_input .search_input {
   width: 300px;
 }
