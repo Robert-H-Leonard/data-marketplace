@@ -27,17 +27,16 @@ export interface JobRequestData {
     dataFormat: string;
     description: string;
     validatedFee?: number;
+    validatedBidId?: number;
 }
 
 export interface JobRequestDataWithBids extends JobRequestData {
-    bids: number;
+    bids: OperatorBid[];
 }
 
 interface OperatorSubmission {
-    jobRequestId: number;
-    jobRequestName: string;
-    apiUrl: string;
-    dataResponse: string;
+    jobId: number;
+    nodeWalletAddress: string;
 }
 
 interface OperatorBid {
@@ -51,7 +50,6 @@ interface OperatorBid {
 export interface IJobRequestStore {
     createJobRequest: (jobRequestSubmission: JobRequestSubmission) => Promise<boolean>;
     getJobRequests: () => Promise<JobRequestData[]>;
-    getJobRequestById: (id: number) => Promise<JobRequestData | undefined>;
     getBidsOnJobRequest: (id: number) => Promise<OperatorBid[]>;
 
     acceptBid: (jobRequestId: number, operatorBidId: number) => void;
@@ -67,7 +65,7 @@ export class JobRequestStore implements IJobRequestStore {
     private static instance?: IJobRequestStore;
 
     private constructor(signer?: providers.JsonRpcSigner) {
-        this.contractAddress = "0x0D6a65dc9A103a6A59f591a5DBcd2704F4c3BDf3";
+        this.contractAddress = "0xDff41DB060Be84562E64daB5583Ca932543438c2";
         this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba");
         this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, signer ? signer : this.contractRpcProvider);
     }
@@ -100,26 +98,11 @@ export class JobRequestStore implements IJobRequestStore {
                 dataSource: datasource,
                 name: jobRequest.requestedDataSource[1],
                 auth: jobRequest.requestedDataSource[2],
-                dataFormat: jobRequest.requestedDataSource[3],
-                description: jobRequest.requestedDataSource[4],
+                dataFormat: "uint",
+                description: jobRequest.description.description[4],
                 network: "Goerli"
             } as JobRequestData
         })
-    }
-
-    public async getJobRequestById(id: number): Promise<JobRequestData | undefined> {
-        const jobReq = await this.jobRequestContract.getJobRequestById(id);
-        const datasource = `https://${jobReq.requestedDataSource.url}`
-        return {
-            id: parseInt(jobReq.id.toString()),
-            requestorAddress: jobReq.requestor,
-            currentState: getCurrentStateFromNumber(jobReq.currentState),
-            dataSource: datasource,
-            name: jobReq.requestedDataSource.name,
-            auth: jobReq.requestedDataSource.auth,
-            dataFormat: jobReq.requestedDataSource.dataFormat,
-            description: jobReq.requestedDataSource.description
-        } as JobRequestData;
     }
 
     public async getBidsOnJobRequest(id: number): Promise<OperatorBid[]> {
@@ -131,11 +114,8 @@ export class JobRequestStore implements IJobRequestStore {
                 nodeWalletAddress: bid.nodeOperator,
                 jobRequestId: parseInt(bid.jobRequestId.toString()),
                 submission: {
-                    jobRequestId: bid.submission.jobRequestId,
-                    jobRequestName: bid.submission.jobRequestName,
-                    apiUrl: `https://${bid.submission.datasource.url}`,
-                    dataResponse: bid.submission.dataResponse,
-                    network: "Goerli"
+                    jobId: bid.submission.jobId,
+                    nodeWalletAddress: bid.submission.nodeOperator,
                 },
                 id: parseInt(bid.id.toString())
             } as OperatorBid 
@@ -147,10 +127,13 @@ export class JobRequestStore implements IJobRequestStore {
         return;
     }
 
-    // Example submission: ["1deof322","get-fake-data",["http","GET","test-source-3.com"],"data-response"]
     public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number): Promise<void> {
-        const sub = [operatorSubmission.jobRequestName, operatorSubmission.jobRequestName, ["http","GET",operatorSubmission.apiUrl], operatorSubmission.dataResponse]
-        const result = await this.jobRequestContract.submit(jobRequestId, sub, dataFee);
+        const result = await this.jobRequestContract.submitBid(jobRequestId, [operatorSubmission.jobId,operatorSubmission.nodeWalletAddress], dataFee);
+        return;
+    }
+
+    public async getPendingBid(jobRequestId: number): Promise<number | undefined> {
+        const result = await this.jobRequestContract.getPendingBidOnJobRequest(jobRequestId);
         return;
     }
 

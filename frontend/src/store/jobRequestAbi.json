@@ -167,40 +167,13 @@
 				"components": [
 					{
 						"internalType": "string",
-						"name": "jobRequestId",
+						"name": "jobId",
 						"type": "string"
 					},
 					{
-						"internalType": "string",
-						"name": "jobRequestName",
-						"type": "string"
-					},
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "url",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "name",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "auth",
-								"type": "string"
-							}
-						],
-						"internalType": "struct Datasource",
-						"name": "datasource",
-						"type": "tuple"
-					},
-					{
-						"internalType": "string",
-						"name": "dataResponse",
-						"type": "string"
+						"internalType": "address",
+						"name": "nodeOperator",
+						"type": "address"
 					}
 				],
 				"internalType": "struct OperatorSubmission",
@@ -262,40 +235,13 @@
 						"components": [
 							{
 								"internalType": "string",
-								"name": "jobRequestId",
+								"name": "jobId",
 								"type": "string"
 							},
 							{
-								"internalType": "string",
-								"name": "jobRequestName",
-								"type": "string"
-							},
-							{
-								"components": [
-									{
-										"internalType": "string",
-										"name": "url",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "name",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "auth",
-										"type": "string"
-									}
-								],
-								"internalType": "struct Datasource",
-								"name": "datasource",
-								"type": "tuple"
-							},
-							{
-								"internalType": "string",
-								"name": "dataResponse",
-								"type": "string"
+								"internalType": "address",
+								"name": "nodeOperator",
+								"type": "address"
 							}
 						],
 						"internalType": "struct OperatorSubmission",
@@ -480,6 +426,25 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "getPendingBidOnJobRequest",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -539,6 +504,25 @@
 				"internalType": "struct DataDescription",
 				"name": "description",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "jobRequestToPendingBid",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

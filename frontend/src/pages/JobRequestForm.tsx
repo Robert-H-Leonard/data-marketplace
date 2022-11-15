@@ -8,6 +8,19 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { JobRequestStore } from '../store/JobRequestStore'
+import { alpha, styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom'
+
+const StyledTextField =  styled(TextField)({
+    '& label.Mui-focused': {
+        color: 'rgba(0, 0, 0, 0.54)',
+      },
+    '& .MuiOutlinedInput-root': {
+    '&.Mui-focused fieldset': {
+        borderWidth: '1px',
+        borderColor: 'rgba(0, 0, 0, 0.54)',
+      },}
+  });
 
 interface JobRequestFormProps {
     jobRequestStore: JobRequestStore;
@@ -53,26 +66,28 @@ export default function JobRequestForm(props: JobRequestFormProps) {
             {
                 shouldRedirect ? <Navigate to="/"/> : <></>
             }
-            <TextField
+            <StyledTextField
                 required
                 className='text_input'
                 label="Name"
-                placeholder="Corn price"
+                focused
+                placeholder="Eth price"
                 value={jobRequestSubmission.name}
                 onChange={(event) => {setJobRequestSubmission({...jobRequestSubmission, name: event.target.value})}}
             />
-            <TextField
+            <StyledTextField
                 required
+                focused
                 className='text_input'
                 label="Data Source &#40;API Url&#41;"
-                placeholder="https://api.coin**sk.com/**/**/currentprice.json"
                 value={jobRequestSubmission.datasource}
                 onChange={(event) => {setJobRequestSubmission({...jobRequestSubmission, datasource: event.target.value})}}
             />
-            <TextField
+            <StyledTextField
                 className='text_input'
                 helperText='optional'
                 label="Auth Token / API Key"
+                focused
                 placeholder="AI*****4JsXZ-H-G###33"
                 value={jobRequestSubmission.auth}
                 onChange={(event) => {setJobRequestSubmission({...jobRequestSubmission, auth: event.target.value})}}
@@ -110,6 +125,7 @@ export default function JobRequestForm(props: JobRequestFormProps) {
             </FormControl>
             <TextField
                 required
+                focused
                 className='text_input'
                 label="Requested Data Description"
                 defaultValue="Corn spot price"

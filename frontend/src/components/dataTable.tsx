@@ -10,13 +10,14 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
+import { Link, useNavigate} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { JobRequestDataWithBids } from '../store/JobRequestStore';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
 
 
@@ -67,48 +68,40 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
+        id: 'id',
+        numeric: true,
+        label: 'ID',
+    },
+    {
         id: 'owner',
         numeric: false,
-        disablePadding: false,
         label: 'Owner',
     },
     {
         id: 'name',
         numeric: false,
-        disablePadding: false,
         label: 'Name',
     },
     {
         id: 'network',
         numeric: false,
-        disablePadding: false,
         label: 'Network',
     },
     {
         id: 'fee',
-        numeric: false,
-        disablePadding: false,
+        numeric: true,
         label: 'Fee',
     },
     {
         id: 'bids',
         numeric: true,
-        disablePadding: false,
         label: 'Bids',
     },
     {
         id: 'accountStatus',
         numeric: false,
-        disablePadding: false,
         label: 'Account status',
     },
-    {
-        id: 'menu',
-        numeric: false,
-        disablePadding: false,
-        label: '',
-    },
-
 ];
 
 function EnhancedTableHead(props) {
@@ -121,24 +114,10 @@ function EnhancedTableHead(props) {
     return (
         <TableHead>
             <TableRow className="table_headers">
-                <TableCell align="right">
-                    <FormControlLabel
-                        label="ID"
-                        control={<Checkbox
-                            color="secondary"
-                            indeterminate={true}
-                            checked={rowCount > 0 && numSelected === rowCount}
-                            onChange={onSelectAllClick}
-                            inputProps={{
-                                'aria-label': 'select all IDs',
-                            }}
-                        />}
-                    />
-                </TableCell>
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
-                        align={'right'}
+                        align={'center'}
                         padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
@@ -183,6 +162,39 @@ export default function EnhancedTable(props: EnhancedTableProps) {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const { jobRequests } = props;
+    
+    const [info, setInfo] = React.useState(jobRequests);
+
+    const navigate = useNavigate()
+    const handleRowClick = (row: JobRequestDataWithBids) => { 
+        navigate(`/jobRequest/${row.id}`, {state: {jobRequest: row}})
+    }
+
+    function createData(jobRequest: JobRequestDataWithBids) {
+        let owner = jobRequest.requestorAddress;
+        let accountStatus = jobRequest.currentState.toLowerCase();
+        if (accountStatus.includes('open')) {
+            accountStatus = 'Open Bid'
+        } else if (accountStatus.includes(`fulfilled`)) {
+            accountStatus = 'Success'
+        } else {
+            accountStatus = 'Pending'
+        }
+        let fee = Math.random().toFixed(2)
+        let bids = 0
+        let network = `(Goerli) Ethereum`
+
+        return {
+            id: jobRequest.id,
+            owner,
+            accountStatus,
+            fee,
+            bids,
+            network
+        };
+    }
+
+    const rows = jobRequests.map(job => createData(job))
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -192,31 +204,11 @@ export default function EnhancedTable(props: EnhancedTableProps) {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.name);
+            const newSelected = rows.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
         setSelected([]);
-    };
-
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        setSelected(newSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -256,14 +248,14 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                  rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(jobRequests, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((jobRequest, index) => {
+                                .map((jobRequest: JobRequestDataWithBids, index) => {
                                     const isItemSelected = isSelected(jobRequest.id);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, jobRequest.id)}
+                                            onClick={(event) => handleRowClick(jobRequest)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
@@ -275,11 +267,11 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                                     label={index}
                                                     control={<Checkbox checked={isItemSelected} />} />
                                             </TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.requestorAddress}</TableCell>
+                                            <TableCell align="right" padding='normal'>{`${uniqueNamesGenerator( {dictionaries: [names], seed: jobRequest.requestorAddress}).toLowerCase()}.eth`}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.bids}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.bids.length}</TableCell>
                                             <TableCell align="right" padding='normal'><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
                                             <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
                                         </TableRow>
