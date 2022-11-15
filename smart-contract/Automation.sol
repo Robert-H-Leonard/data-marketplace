@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 
 abstract contract JobRequest {
     uint256 public numOfBidsPendingValidation;
-    function validatePendingBids() virtual external returns (bool);
+    function validateBidSubmission() virtual external returns (bool);
 }
 
 contract Automation is AutomationCompatibleInterface {
@@ -24,6 +24,6 @@ contract Automation is AutomationCompatibleInterface {
     }
 
     function performUpkeep(bytes calldata) external override {
-        jobRequestContract.validatePendingBids();
+        jobRequestContract.validateBidSubmission();
     }
 }
