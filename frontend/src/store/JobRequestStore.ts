@@ -30,7 +30,7 @@ export interface JobRequestData {
 }
 
 export interface JobRequestDataWithBids extends JobRequestData {
-    bids: number;
+    bids: OperatorBid[];
 }
 
 interface OperatorSubmission {
@@ -51,7 +51,6 @@ interface OperatorBid {
 export interface IJobRequestStore {
     createJobRequest: (jobRequestSubmission: JobRequestSubmission) => Promise<boolean>;
     getJobRequests: () => Promise<JobRequestData[]>;
-    getJobRequestById: (id: number) => Promise<JobRequestData | undefined>;
     getBidsOnJobRequest: (id: number) => Promise<OperatorBid[]>;
 
     acceptBid: (jobRequestId: number, operatorBidId: number) => void;
@@ -100,26 +99,11 @@ export class JobRequestStore implements IJobRequestStore {
                 dataSource: datasource,
                 name: jobRequest.requestedDataSource[1],
                 auth: jobRequest.requestedDataSource[2],
-                dataFormat: jobRequest.requestedDataSource[3],
-                description: jobRequest.requestedDataSource[4],
+                dataFormat: "uint",
+                description: jobRequest.description.description[4],
                 network: "Goerli"
             } as JobRequestData
         })
-    }
-
-    public async getJobRequestById(id: number): Promise<JobRequestData | undefined> {
-        const jobReq = await this.jobRequestContract.getJobRequestById(id);
-        const datasource = `https://${jobReq.requestedDataSource.url}`
-        return {
-            id: parseInt(jobReq.id.toString()),
-            requestorAddress: jobReq.requestor,
-            currentState: getCurrentStateFromNumber(jobReq.currentState),
-            dataSource: datasource,
-            name: jobReq.requestedDataSource.name,
-            auth: jobReq.requestedDataSource.auth,
-            dataFormat: jobReq.requestedDataSource.dataFormat,
-            description: jobReq.requestedDataSource.description
-        } as JobRequestData;
     }
 
     public async getBidsOnJobRequest(id: number): Promise<OperatorBid[]> {

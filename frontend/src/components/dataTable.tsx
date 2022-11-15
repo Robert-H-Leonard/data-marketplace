@@ -165,8 +165,8 @@ export default function EnhancedTable(props: EnhancedTableProps) {
     const [info, setInfo] = React.useState(jobRequests);
 
     const navigate = useNavigate()
-    const handleRowClick = (row) => { 
-        navigate(`/job/${row.id}`)
+    const handleRowClick = (row: JobRequestDataWithBids) => { 
+        navigate(`/jobRequest/${row.id}`, {state: {jobRequest: row}})
     }
 
     function createData(jobRequest: JobRequestDataWithBids) {
@@ -254,7 +254,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleRowClick(event)}
+                                            onClick={(event) => handleRowClick(jobRequest)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
@@ -270,7 +270,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                             <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.bids}</TableCell>
+                                            <TableCell align="right" padding='normal'>{jobRequest.bids.length}</TableCell>
                                             <TableCell align="right" padding='normal'><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
                                             <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
                                         </TableRow>

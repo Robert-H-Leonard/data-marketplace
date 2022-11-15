@@ -8,7 +8,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button'
 import { useLocation } from "react-router";
 import {styled } from '@mui/material/styles';
-import { useState } from 'react';
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -22,18 +21,21 @@ const StyledTextField = styled(TextField)({
     }
 });
 
-function openToBidView({ requestor, info }) {
+function openToBidView({ requestorAddress, bids }) {
 
     return (
         <section className='open_to_bid'>
-            {requestor &&
+            {requestorAddress &&
                 <div>
                     <h3> Bidding History </h3>
-                    <BidAccordian link='0.5 LINK' expiration='08/24' user='0xDC%%9AE02--**5%7022' requestor={true} />
-                    <BidAccordian link='0.25 LINK' expiration='08/24' user='0x6--.7432ffE%%%6e7C786..EA' requestor={true} />
+                    {
+                        bids.map(bid => {
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={true} />
+                        })
+                    }
                 </div>
             }
-            {!requestor &&
+            {!requestorAddress &&
                 <div>
                     <form className='bid_input'>
                         <TextField
@@ -50,8 +52,11 @@ function openToBidView({ requestor, info }) {
                         <Button variant="contained">BID</Button>
                     </form>
                     <h3>Bids</h3>
-                    <BidAccordian link='0.5 LINK' expiration='08/24' user='0xDC%%9AE02--**5%7022' requestor={false} />
-                    <BidAccordian link='0.25 LINK' expiration='08/24' user='0x6--.7432ffE%%%6e7C786..EA' requestor={false} />
+                    {
+                        bids.map(bid => {
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} />
+                        })
+                    }
                 </div>
             }
         </section>
@@ -103,17 +108,14 @@ function fufilledView() {
 }
 
 export default function JobInfo() {
-    let data = useLocation();
-    console.log(data)
-    // const [jobStatus, setStatus] = useState('Open to Bid')
-    // const [jobStatus, setStatus] = useState('Validate')
-    const [jobStatus, setStatus] = useState('Fufilled')
-    const steps = ['Open to Bid', 'Validate', 'Fufilled']
-    console.log(jobStatus);
-    console.log(steps.indexOf(jobStatus))
+    const { state: { jobRequest } } = useLocation();
+    const {currentState, id, network, requestorAddress, name, bids, description} = jobRequest;
+
+    const steps = ['OpenBid', 'PendingValidation', 'Validated']
+
     return (
         <div className="job_info_page">
-            <Stepper className='stepper' activeStep={steps.indexOf(jobStatus)} alternativeLabel>
+            <Stepper className='stepper' activeStep={steps.indexOf(currentState)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
@@ -121,17 +123,16 @@ export default function JobInfo() {
                 ))}
             </Stepper>
             <div className='job_info'>
-                <div> Job request 1 . vitalek</div>
-                <h2> Corn Price </h2>
-                <p className='job_details'> Corn spot price from https://api.coindesk.com/v1/bpi/currentprice.json
-                    Authenticated with API Key: AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe</p>
+                <div> {`Job request ${id}: ${requestorAddress}`}</div>
+                <h2>{name}</h2>
+                <p className='job_details'> {description}</p>
                 <div className='chip_row'>
-                    <Chip className="chip" label="Optimism" />
+                    <Chip className="chip" label={`${network}`} />
                     <Chip className='chip' label="uint256" />
                 </div>
-                {jobStatus === 'Open to Bid' && openToBidView()}
-                {jobStatus === 'Validate' && validateView("bidder")}
-                {jobStatus === 'Fufilled' && fufilledView()}
+                {currentState === 'OpenBid' && openToBidView({requestorAddress, bids})}
+                {currentState === 'PendingValidation' && validateView("bidder")}
+                {currentState === 'Validated' && fufilledView()}
             </div>
         </div>
 

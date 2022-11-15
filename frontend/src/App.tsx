@@ -23,11 +23,13 @@ function App() {
 
   const [jobRequests, setJobRequests] = useState<JobRequestDataWithBids[]>([]);
   const [dataSigner, setDataSigned] = useState<ethers.providers.JsonRpcSigner>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitLoad, setIsInitLoad] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const fetchJobRequest = async () => {
+        setIsLoading(true);
         const loadedRequest: JobRequestDataWithBids[] = []
         // Load request
         const jobRequest = await jobRequestStore.getJobRequests();
@@ -35,7 +37,7 @@ function App() {
         // Load their bids
         for(const req of jobRequest) {
           const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
-          loadedRequest.push({ ...req, bids: bids?.length})
+          loadedRequest.push({ ...req, bids})
         }
   
   
@@ -45,10 +47,10 @@ function App() {
         setIsLoading(false);
       }
   
-      if(jobRequestStore) {
+      if(jobRequestStore && !isLoading) {
         fetchJobRequest();
       }
-    }, 6000);
+    }, 8000);
 
     const fetchJobRequest = async () => {
       const loadedRequest: JobRequestDataWithBids[] = []
@@ -58,16 +60,17 @@ function App() {
       // Load their bids
       for(const req of jobRequest) {
         const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
-        loadedRequest.push({ ...req, bids: bids?.length})
+        loadedRequest.push({ ...req, bids })
       }
 
 
       setJobRequests(loadedRequest);
       setDataSigned(signer as ethers.providers.JsonRpcSigner)
       setIsLoading(false);
+      setIsInitLoad(false);
     }
 
-    if(jobRequestStore) {
+    if(jobRequestStore && isInitLoad) {
       fetchJobRequest();
       setIsLoading(false);
     }
@@ -90,7 +93,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isLoading}/>} />
           <Route path="/createJob" element={<JobRequestForm jobRequestStore={jobRequestStore as JobRequestStore}/>} />
-          <Route path="/jobId" element={<JobInfo />} />
+          <Route path="/jobRequest/:id" element={<JobInfo />} />
         </Routes>
         <Footer />
       </div>
