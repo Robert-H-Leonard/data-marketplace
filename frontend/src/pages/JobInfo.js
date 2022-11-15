@@ -30,13 +30,15 @@ function openToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
         shouldShowBidFields(true);
     }
 
+    const { address } = useAccount();
+
     const [submittedJobId, setSubmittedJobId] = useState("");
     const [submittedNodeAddress, setSubmittedNodeAdress] = useState("");
     const [submitFee, setSubmitFee] = useState("");
 
     return (
         <section className='open_to_bid'>
-            {requestorAddress && !showBidFields &&
+            {requestorAddress == address && !showBidFields &&
                 <div>
                     <h3> Bidding History </h3>
                     {
@@ -46,7 +48,7 @@ function openToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
                     }
                 </div>
             }
-            {!requestorAddress && !showBidFields &&
+            {requestorAddress != address && !showBidFields &&
                 <div>
                     <form className='bid_input'>
                         <TextField

@@ -100,8 +100,7 @@ contract JobRequest is JobRequestInterface {
 
     event OperatorSubmissionValidated(
         int indexed operatorBidId,
-        int indexed jobRequestId,
-        address indexed nodeOperator
+        int indexed jobRequestId
     );
 
     // Hashmap we are using as a database to manage job request
@@ -241,7 +240,7 @@ contract JobRequest is JobRequestInterface {
 
         // check if job request id exists
         require(
-            jobRequests[jobRequestId].id > 0,
+            jobRequests[jobRequestId].id >= 0,
             "Job request id doesn't exist."
         );
 
@@ -286,24 +285,72 @@ contract JobRequest is JobRequestInterface {
 
     }
 
+    function validateBid(uint jobRequestId , uint bidId, bool isValid) external returns (bool) {
+        // check if job request id exists
+        require(
+            jobRequests[jobRequestId].id >= 0,
+            "Job request id doesn't exist."
+        );
+
+        OperatorBid[] memory currentBids = bids[jobRequestId];
+
+        // loops through number of bids to find matching operator bid id
+        for (uint256 idx = 0; idx < currentBids.length; idx++) {
+            if (currentBids[idx].id == bidId) {
+
+                if(isValid) {
+                    jobRequests[jobRequestId].currentState = JobRequestState
+                    .Validated;
+
+                    jobRequestToPendingBid[jobRequestId] = 0;
+
+                    numOfBidsPendingValidation -= 1;
+
+                    return true;
+
+                } else {
+                    jobRequests[jobRequestId].currentState = JobRequestState
+                    .OpenBid;
+
+                    jobRequestToPendingBid[jobRequestId] = 0;
+
+                    numOfBidsPendingValidation -= 1;
+                    return false;
+  
+                }
+        
+            }
+        }
+    }
+
     ////////// Validation functions //////////
     function validatePendingBids() external override returns (bool) {
-        // Called by `upKeepFunction`
-        //Gets up to five bids from bidsPendingValidation
-        // call validateBidSubmission on them
-        // decrement numOfBidsPendingValidation
-        // decrement numSubmittedOfBids
-
-        emit OperatorSubmissionValidated(1,1,msg.sender);
-        return true;
+        return numOfBidsPendingValidation > 0;
     }
 
     // Data validation function.
     // When `validatePendingBids` is called that method will attemot to call this method at least once (the first non zero address retreived from bidsPendingValidation)
-    function validateBidSubmission(uint256 jobRequestId, uint256 operatorBidId)
-        private
+    function validateBidSubmission()
+        external
         returns (bool)
     {
-        return true;
+        for (uint256 idx = 0; idx < numOfJobRequests; idx++) {
+            if (jobRequestToPendingBid[idx] > 0) {
+
+                OperatorBid memory bid = bids[idx][jobRequestToPendingBid[idx] - 1];
+
+                if(keccak256(abi.encodePacked(jobRequests[idx].description.dataFormat)) == keccak256(abi.encodePacked("uint"))) {
+                    this.validateBid(idx, jobRequestToPendingBid[idx] - 1, true);
+                    return true;
+
+                } else {
+                    this.validateBid(idx, jobRequestToPendingBid[idx] - 1, false);
+                    return false;
+  
+                }
+        
+            }
+        }
+        return false;
     }
 }
