@@ -26,7 +26,7 @@ const StyledTextField = styled(TextField)({
     }
 });
 
-function openToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, shouldShowBidFields, setDesiredBid, showBidFields, submitBid}) {
+function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, shouldShowBidFields, setDesiredBid, showBidFields, submitBid}) {
 
     const showBid = () => {
         shouldShowBidFields(true);
@@ -118,7 +118,7 @@ function openToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
     )
 }
 
-function validateView() {
+function ValidateView() {
     return (
         <section>
             <p className='pending_view'> Job Request is currently pending ...</p>
@@ -126,7 +126,7 @@ function validateView() {
     )
 }
 
-function fufilledView() {
+function FufilledView() {
     return (
         <div className='fufilled_view'>
             <h3>Validation Example</h3>
@@ -179,9 +179,9 @@ export default function JobInfo({ jobRequestStore }) {
                     <Chip className="chip" label={`${network}`} />
                     <Chip className='chip' label="uint256" />
                 </div>
-                {currentState === 'OpenBid' && openToBidView({requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid})}
-                {currentState === 'PendingValidation' && validateView()}
-                {currentState === 'Validated' && fufilledView()}
+                {currentState === 'OpenBid' && OpenToBidView({requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid})}
+                {currentState === 'PendingValidation' && ValidateView()}
+                {currentState === 'Validated' && FufilledView()}
             </div>
         </div>
 
