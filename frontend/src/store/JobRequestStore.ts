@@ -98,8 +98,8 @@ export class JobRequestStore implements IJobRequestStore {
                 dataSource: datasource,
                 name: jobRequest.requestedDataSource[1],
                 auth: jobRequest.requestedDataSource[2],
-                dataFormat: "uint",
-                description: jobRequest.description.description[4],
+                dataFormat: jobRequest.description.description.dataFormat,
+                description: jobRequest.description.description,
                 network: "Goerli"
             } as JobRequestData
         })
