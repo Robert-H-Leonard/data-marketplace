@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { JobRequestDataWithBids } from '../store/JobRequestStore';
 import { Checkbox, FormControlLabel } from '@mui/material';
+import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
 
 
@@ -266,7 +267,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                                     label={index}
                                                     control={<Checkbox checked={isItemSelected} />} />
                                             </TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.requestorAddress}</TableCell>
+                                            <TableCell align="right" padding='normal'>{`${uniqueNamesGenerator( {dictionaries: [names], seed: jobRequest.requestorAddress}).toLowerCase()}.eth`}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
                                             <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>

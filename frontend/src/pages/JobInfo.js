@@ -11,6 +11,8 @@ import Button from '@mui/material/Button'
 import { useLocation } from "react-router";
 import {styled } from '@mui/material/styles';
 import { useState } from 'react';
+import { uniqueNamesGenerator, names } from 'unique-names-generator';
+
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -170,7 +172,7 @@ export default function JobInfo({ jobRequestStore }) {
                 ))}
             </Stepper>
             <div className='job_info'>
-                <div> {`Job request ${id}: ${requestorAddress}`}</div>
+                <div> {`Job request ${id}: ${`${uniqueNamesGenerator( {dictionaries: [names], seed: jobRequest.requestorAddress}).toLowerCase()}.eth`}`}</div>
                 <h2>{name}</h2>
                 <p className='job_details'> {description}</p>
                 <div className='chip_row'>
