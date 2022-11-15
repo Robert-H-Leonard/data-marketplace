@@ -25,11 +25,10 @@ struct DataDescription {
     string description;
 }
 
+// Simplify
 struct OperatorSubmission {
-    string jobRequestId;
-    string jobRequestName;
-    Datasource datasource;
-    string dataResponse; // serialized json object
+    string jobId;
+    address nodeOperator;
 }
 
 struct OperatorBid {
@@ -115,6 +114,8 @@ contract JobRequest is JobRequestInterface {
 
     // Hashmap acting as a cache to know which bids we need to validate with automation contract
     mapping(uint256 => OperatorBid) private bidsPendingValidation;
+    mapping(uint256 => uint256) public jobRequestToPendingBid;
+
     uint256 public numOfBidsPendingValidation;
 
     function createJobRequest(string calldata _url, string calldata _name, string calldata _auth, string calldata _dataFormat, string calldata _description)
@@ -188,6 +189,16 @@ contract JobRequest is JobRequestInterface {
         return bids[jobRequestId];
     }
 
+    function getPendingBidOnJobRequest(uint jobRequestId) external view returns (uint) {
+
+        require(
+            jobRequestToPendingBid[jobRequestId] > 0,
+            "Job Request needs submitted bid"
+        );
+        
+        return jobRequestToPendingBid[jobRequestId] - 1;
+    }
+
     function submitBid(uint jobRequestId, OperatorSubmission memory operatorSubmission, uint dataFee)
         public
         override
@@ -240,7 +251,7 @@ contract JobRequest is JobRequestInterface {
             "Only the address that created this request can accept bids"
          );
 
-        // check if there is atleast one bid to accept
+        // check if there is at least one bid to accept
         require(
             bids[jobRequestId].length >= 1,
             "There are no bids for this job request."
@@ -262,10 +273,12 @@ contract JobRequest is JobRequestInterface {
                     .PendingValidation;
                 
                 // Add bid to pending validation so chainlink automation will trigger validation
-                bidsPendingValidation[operatorBidId] = currentBids[idx];
+                bidsPendingValidation[numOfBidsPendingValidation] = currentBids[idx];
 
                 // increment numOfBidsPendingValidation by 1
                 numOfBidsPendingValidation += 1;
+
+                jobRequestToPendingBid[jobRequestId] = operatorBidId + 1;
 
                 emit JobRequestUpdated( jobRequests[jobRequestId].requestor, jobRequestId, operatorBidId, "Pending Validation");
             }

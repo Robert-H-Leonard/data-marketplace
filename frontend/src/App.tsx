@@ -93,7 +93,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard jobRequests={jobRequests} isLoading={isLoading}/>} />
           <Route path="/createJob" element={<JobRequestForm jobRequestStore={jobRequestStore as JobRequestStore}/>} />
-          <Route path="/jobRequest/:id" element={<JobInfo />} />
+          <Route path="/jobRequest/:id" element={<JobInfo jobRequestStore={jobRequestStore}/>} />
         </Routes>
         <Footer />
       </div>

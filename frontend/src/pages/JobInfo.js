@@ -1,4 +1,6 @@
 import Stepper from '@mui/material/Stepper';
+import { useAccount } from "wagmi"
+import { Navigate } from 'react-router-dom'
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import { Chip } from '@mui/material';
@@ -8,6 +10,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button'
 import { useLocation } from "react-router";
 import {styled } from '@mui/material/styles';
+import { useState } from 'react';
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -21,21 +24,29 @@ const StyledTextField = styled(TextField)({
     }
 });
 
-function openToBidView({ requestorAddress, bids }) {
+function openToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, shouldShowBidFields, setDesiredBid, showBidFields, submitBid}) {
+
+    const showBid = () => {
+        shouldShowBidFields(true);
+    }
+
+    const [submittedJobId, setSubmittedJobId] = useState("");
+    const [submittedNodeAddress, setSubmittedNodeAdress] = useState("");
+    const [submitFee, setSubmitFee] = useState("");
 
     return (
         <section className='open_to_bid'>
-            {requestorAddress &&
+            {requestorAddress && !showBidFields &&
                 <div>
                     <h3> Bidding History </h3>
                     {
                         bids.map(bid => {
-                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={true} />
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={true} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId}/>
                         })
                     }
                 </div>
             }
-            {!requestorAddress &&
+            {!requestorAddress && !showBidFields &&
                 <div>
                     <form className='bid_input'>
                         <TextField
@@ -48,26 +59,20 @@ function openToBidView({ requestorAddress, bids }) {
                                 pattern: '[0-9]*',
                                 endAdornment: <InputAdornment position="end">LINK</InputAdornment>,
                             }}
+                            onChange={(event) => setSubmitFee(event.target.value)}
                         />
-                        <Button variant="contained">BID</Button>
+                        <Button variant="contained" onClick={() => showBid()}>BID</Button>
                     </form>
                     <h3>Bids</h3>
                     {
                         bids.map(bid => {
-                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} />
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId}/>
                         })
                     }
                 </div>
             }
-        </section>
-
-    )
-}
-
-function validateView(bidder) {
-    return (
-        <section>
-            {bidder &&
+            {
+                showBidFields &&
                 <form className='pending_view_input'>
                     <StyledTextField
                         className='text_input'
@@ -75,6 +80,14 @@ function validateView(bidder) {
                         helperText="Enter address of the Oracle contract"
                         fullWidth={true}
                         focused
+                        onChange={event => {
+                            setSubmittedNodeAdress(event.target.value)
+                            setDesiredBid({
+                                id: submittedJobId,
+                                address: submittedNodeAddress,
+                                fee: submitFee
+                            })
+                        }}
                     />
                     <StyledTextField
                         className='text_input'
@@ -82,10 +95,29 @@ function validateView(bidder) {
                         helperText="Enter the relevant job ID found in the Node Operators UI"
                         fullWidth={true}
                         focused
+                        onChange={event => {
+                            setSubmittedJobId(event.target.value)
+                            setDesiredBid({
+                                id: submittedJobId,
+                                address: submittedNodeAddress,
+                                fee: submitFee
+                            })
+                        }}
                     />
-                    <Button variant="contained">Submit</Button>
-                </form>}
-                {!bidder && <p className='pending_view'> Job Request is currently pending ...</p>}
+                    <Button variant="contained" onClick={async () => {
+                        submitBid()
+                    }}>Submit</Button>
+                </form>
+            }
+        </section>
+
+    )
+}
+
+function validateView() {
+    return (
+        <section>
+            <p className='pending_view'> Job Request is currently pending ...</p>
         </section>
     )
 }
@@ -107,14 +139,27 @@ function fufilledView() {
 
 }
 
-export default function JobInfo() {
+export default function JobInfo({ jobRequestStore }) {
     const { state: { jobRequest } } = useLocation();
+
     const {currentState, id, network, requestorAddress, name, bids, description} = jobRequest;
 
     const steps = ['OpenBid', 'PendingValidation', 'Validated']
 
+    const [showBidFields, shouldShowBidFields] = useState(false);
+    const [desiredBid, setDesiredBid] = useState(undefined);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+
+    const onSubmitBid = async () => {
+        await jobRequestStore.submitBid(id, {jobId: desiredBid.id, nodeWalletAddress: desiredBid.address }, desiredBid.fee);
+        setShouldRedirect(true);
+    }
+
     return (
         <div className="job_info_page">
+            {
+                shouldRedirect ? <Navigate to="/"/> : <></>
+            }
             <Stepper className='stepper' activeStep={steps.indexOf(currentState)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
@@ -130,8 +175,8 @@ export default function JobInfo() {
                     <Chip className="chip" label={`${network}`} />
                     <Chip className='chip' label="uint256" />
                 </div>
-                {currentState === 'OpenBid' && openToBidView({requestorAddress, bids})}
-                {currentState === 'PendingValidation' && validateView("bidder")}
+                {currentState === 'OpenBid' && openToBidView({requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid})}
+                {currentState === 'PendingValidation' && validateView()}
                 {currentState === 'Validated' && fufilledView()}
             </div>
         </div>
