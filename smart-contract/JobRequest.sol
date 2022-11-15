@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.0;
+pragma solidity ^0.8.7;
+
+import '@chainlink/contracts/src/v0.8/ChainlinkClient.sol';
+import '@chainlink/contracts/src/v0.8/ConfirmedOwner.sol';
 
 // statuses: open to bid, pending validation, and fulfilled
 // For open to bid: new job requests should automatically get this status
@@ -52,8 +55,8 @@ struct JobRequestData {
     DataDescription description;
 }
 
-interface JobRequestInterface {
-    // Data store functions ///////////////////
+interface JobRequestInterface is ChainlinkClient {
+    using Chainlink for Chainlink.Request;
 
     // See example pagination here: https://programtheblockchain.com/posts/2018/04/20/storage-patterns-pagination/
     function getJobRequests(uint256 cursor, uint256 pageSize)
@@ -357,5 +360,17 @@ contract JobRequest is JobRequestInterface {
             }
         }
         return false;
+    }
+
+    function requestData() public returns (OperatorBid bid, JobRequestData jobRequest) {
+        Chainlink.Request memory req = buildChainlinkRequest(bid.submission.jobId, address(this), jobRequest.requestedDataSource.url);
+
+        // Save request id on bid
+        return sendChainlinkRequest(req, bid.dataFeedFee);
+    }
+
+    function fulfillData(bytes32 _requestId, uint256 data) public recordChainlinkFulfillment(_requestId) {
+
+        //Find bid with requestId ad update if it was validated or not
     }
 }
