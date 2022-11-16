@@ -13,7 +13,6 @@ export default function FilterInput() {
     const { address } = useAccount();
     return (
         <div className='filter_input'>
-            <div className='.filter_input_left'>
                 <form>
                     <FormControl className='search_input' >
                         <TextField
@@ -38,9 +37,7 @@ export default function FilterInput() {
                             <MenuItem value={30}>Fufilled</MenuItem>
                         </Select>
                     </FormControl>
-                    <img  className="filterIcon" src='filterIcon.svg' alt='filterIcon' />
                 </form>
-            </div>
             {
                 address 
                     ? 

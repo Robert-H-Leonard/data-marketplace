@@ -12,9 +12,9 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import Chip from '@mui/material/Chip';
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { JobRequestDataWithBids } from '../store/JobRequestStore';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import { uniqueNamesGenerator, names } from 'unique-names-generator';
@@ -100,7 +100,7 @@ const headCells = [
     {
         id: 'accountStatus',
         numeric: false,
-        label: 'Account status',
+        label: 'Account Status',
     },
 ];
 
@@ -118,7 +118,6 @@ function EnhancedTableHead(props) {
                     <TableCell
                         key={headCell.id}
                         align={'center'}
-                        padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
                         <TableSortLabel
@@ -162,12 +161,12 @@ export default function EnhancedTable(props: EnhancedTableProps) {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const { jobRequests } = props;
-    
+
     const [info, setInfo] = React.useState(jobRequests);
 
     const navigate = useNavigate()
-    const handleRowClick = (row: JobRequestDataWithBids) => { 
-        navigate(`/jobRequest/${row.id}`, {state: {jobRequest: row}})
+    const handleRowClick = (row: JobRequestDataWithBids) => {
+        navigate(`/jobRequest/${row.id}`, { state: { jobRequest: row } })
     }
 
     function createData(jobRequest: JobRequestDataWithBids) {
@@ -262,18 +261,15 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                             key={jobRequest.id}
                                             selected={isItemSelected}
                                         >
-                                            <TableCell align="right">
-                                                <FormControlLabel
-                                                    label={index}
-                                                    control={<Checkbox checked={isItemSelected} />} />
+                                            <TableCell align={'center'}>
+                                                {jobRequest.id}
                                             </TableCell>
-                                            <TableCell align="right" padding='normal'>{`${uniqueNamesGenerator( {dictionaries: [names], seed: jobRequest.requestorAddress}).toLowerCase()}.eth`}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.name}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.network}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.validatedFee}</TableCell>
-                                            <TableCell align="right" padding='normal'>{jobRequest.bids.length}</TableCell>
-                                            <TableCell align="right" padding='normal'><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
-                                            <TableCell> <FontAwesomeIcon icon={faEllipsisVertical} /></TableCell>
+                                            <TableCell align={'center'}>{`${uniqueNamesGenerator({ dictionaries: [names], seed: jobRequest.requestorAddress }).toLowerCase()}.eth`}</TableCell>
+                                            <TableCell align={'center'}>{jobRequest.name}</TableCell>
+                                            <TableCell align={'center'} >{jobRequest.network}</TableCell>
+                                            <TableCell align={'center'}>{jobRequest.validatedFee}</TableCell>
+                                            <TableCell align={'center'}>{jobRequest.bids.length}</TableCell>
+                                            <TableCell align={'center'}><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
                                         </TableRow>
                                     );
                                 })}

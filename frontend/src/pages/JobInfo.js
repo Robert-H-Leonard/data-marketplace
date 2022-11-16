@@ -9,7 +9,7 @@ import { TextField } from '@mui/material'
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button'
 import { useLocation } from "react-router";
-import {styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { uniqueNamesGenerator, names } from 'unique-names-generator';
 
@@ -26,7 +26,7 @@ const StyledTextField = styled(TextField)({
     }
 });
 
-function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, shouldShowBidFields, setDesiredBid, showBidFields, submitBid}) {
+function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, shouldShowBidFields, setDesiredBid, showBidFields, submitBid }) {
 
     const showBid = () => {
         shouldShowBidFields(true);
@@ -45,7 +45,7 @@ function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
                     <h3> Bidding History </h3>
                     {
                         bids.map(bid => {
-                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={true} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId}/>
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={true} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId} />
                         })
                     }
                 </div>
@@ -70,7 +70,7 @@ function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
                     <h3>Bids</h3>
                     {
                         bids.map(bid => {
-                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId}/>
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId} />
                         })
                     }
                 </div>
@@ -126,19 +126,44 @@ function ValidateView() {
     )
 }
 
-function FufilledView() {
+function FufilledView(id, requestorAddres) {
     return (
         <div className='fufilled_view'>
-            <h3>Validation Example</h3>
-            <TextField disabled
-                id="outlined-read-only-input"
-                label="Returned Value"
-                defaultValue="uint256: 53"
-                fullWidth={true}
-                InputProps={{
-                    readOnly: true,
-                }}
-            />
+            <h3>Validation Results</h3>
+            <form>
+                <TextField disabled
+                    id="outlined-read-only-input"
+                    label="Returned Value"
+                    defaultValue="uint256: 53"
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
+                <TextField disabled
+                    id="outlined-read-only-input"
+                    label="Node Operator Address"
+                    defaultValue="****"
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
+                <TextField disabled
+                    id="outlined-read-only-input"
+                    label="Job ID"
+                    defaultValue={id}
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
+                <TextField disabled
+                    id="outlined-read-only-input"
+                    label="Data Fee"
+                    defaultValue="**"
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
+            </form>
         </div>)
 
 }
@@ -146,7 +171,7 @@ function FufilledView() {
 export default function JobInfo({ jobRequestStore }) {
     const { state: { jobRequest } } = useLocation();
 
-    const {currentState, id, network, requestorAddress, name, bids, description} = jobRequest;
+    const { currentState, id, network, requestorAddress, name, bids, description } = jobRequest;
 
     const steps = ['OpenBid', 'PendingValidation', 'Validated']
 
@@ -155,33 +180,33 @@ export default function JobInfo({ jobRequestStore }) {
     const [shouldRedirect, setShouldRedirect] = useState(false);
 
     const onSubmitBid = async () => {
-        await jobRequestStore.submitBid(id, {jobId: desiredBid.id, nodeWalletAddress: desiredBid.address }, desiredBid.fee);
+        await jobRequestStore.submitBid(id, { jobId: desiredBid.id, nodeWalletAddress: desiredBid.address }, desiredBid.fee);
         setShouldRedirect(true);
     }
 
     return (
         <div className="job_info_page">
             {
-                shouldRedirect ? <Navigate to="/"/> : <></>
+                shouldRedirect ? <Navigate to="/" /> : <></>
             }
             <Stepper className='stepper' activeStep={steps.indexOf(currentState)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+                        <StepLabel>{label === "OpenBid" ? "Open to Bid" : label === "PendingValidation" ? "Pending" : "Validated"}</StepLabel>
                     </Step>
                 ))}
             </Stepper>
             <div className='job_info'>
-                <div> {`Job request ${id}: ${`${uniqueNamesGenerator( {dictionaries: [names], seed: jobRequest.requestorAddress}).toLowerCase()}.eth`}`}</div>
+                <h4> {`Job request ${id} • ${`${uniqueNamesGenerator({ dictionaries: [names], seed: jobRequest.requestorAddress }).toLowerCase()}.eth`}`}</h4>
                 <h2>{name}</h2>
                 <p className='job_details'> {description}</p>
                 <div className='chip_row'>
                     <Chip className="chip" label={`${network}`} />
                     <Chip className='chip' label="uint256" />
                 </div>
-                {currentState === 'OpenBid' && OpenToBidView({requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid})}
+                {currentState === 'OpenBid' && OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid })}
                 {currentState === 'PendingValidation' && ValidateView()}
-                {currentState === 'Validated' && FufilledView()}
+                {currentState === 'Validated' && FufilledView(id, requestorAddress)}
             </div>
         </div>
 

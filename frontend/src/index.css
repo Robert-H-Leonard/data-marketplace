@@ -3,12 +3,23 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin-left: 81px;
-  margin-right: 100px;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 90vw;
+  height: 97vh;
+  margin-top: .5%;
+  margin-bottom: .5%;
 }
 
 header {
@@ -16,19 +27,29 @@ header {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 175px;
+  width: 100%;
 }
-header a { 
+
+header a {
   all: unset;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
-  min-width: 33%;
-  max-width: 40%;
+  width: 50%;
+  cursor: pointer;
 }
+
+
 header img {
   width: 15%;
+  margin-right: 5%;
+  transition: 0.5s;
+}
+
+header img:hover {
+  width: 17%;
+
 }
 
 header h1 {
@@ -36,7 +57,13 @@ header h1 {
   font-weight: 700;
   font-size: 34px;
   color: #375BD2;
-  letter-spacing: -1.5px;
+  letter-spacing: -.5px;
+  margin-top: 1%;
+  transition: 0.5s;
+}
+
+header h1:hover {
+  font-size: 36px;
 }
 
 .login_modal {
@@ -45,33 +72,49 @@ header h1 {
   justify-content: flex-end;
 }
 
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 95%;
+  height: 75%;
+}
+
+.dashboard title {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 100%;
+}
+
 .dashboard .job_requests_title {
   text-align: left;
   font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  margin-bottom: 48px;
-  letter-spacing: -.5px;
+  font-weight: 600;
+  margin-left: 4%;
+  letter-spacing: 1px;
 }
 
 .filter_input {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-left: 25px;
-  margin-bottom: 40px;
   width: 100%;
+  margin-left: 5%;
 }
 
-.filter_input form{ 
+.filter_input form {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  width: calc(49.43% + 20px) ;
+  justify-content: flex-start;
+  width: 100%
 }
 
 .filter_input_left {
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .filter_input_right {
@@ -79,10 +122,10 @@ header h1 {
   flex-direction: row;
 }
 
-.filter_input_left {
+/* .filter_input_left {
   display: flex;
   flex-direction: row;
-}
+} */
 
 .filter_input_right {
   display: flex;
@@ -90,13 +133,13 @@ header h1 {
 }
 
 .filter_input .search_input {
-  width: 300px;
+  margin-right: 5%;
 }
 
-.filter_input .status_input {
+/* .filter_input .status_input {
   width: 450px;
   text-align: left;
-}
+} */
 
 .filter_input .button_row {
   display: flex;
@@ -109,28 +152,30 @@ header h1 {
 .data_table {
   font-family: 'Roboto';
   font-weight: 200px;
-  margin-bottom: 26.5px;
 }
-
-.data_table .table_headers {
+.data_table	.MuiTableHead-root .MuiTableCell-root{ 
   font-family: 'Roboto';
-  font-weight: 400px;
+  /* font-weight: 500; */
+  letter-spacing: 1px;
+}
+.data_table .table_headers {
+
 }
 
-.data_table tr{ 
+.data_table tr {
   cursor: pointer;
 }
 
 
 .job_request_form_page {
-  width: 760px;
-  height: 549px;
-  margin-left: 156px;
+  margin-top: 3%;
+  width: 80%;
+  height: 65%;
 }
 
 .job_request_form_page .text_input {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 2%;
 
 }
 
@@ -140,65 +185,92 @@ header h1 {
   margin-bottom: 16px;
 }
 
-.job_request_form_page .margin_right {
-  margin-right: 32px;
+.job_request_form_page .dropdown_row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-.job_request_form_page .save, .job_request_form_page .cancel { 
+.job_request_form_page .save,
+.job_request_form_page .cancel {
   font-weight: 600;
   letter-spacing: .5px;
   margin-top: 16px;
 }
 
-.job_info_page{ 
+.job_request_form_page .button_row {
+  width: 25%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 46.5px;
+  flex-direction: row;
+  justify-content: space-between;
 }
-.job_info_page h2 { 
-  margin-bottom: 8px;
+
+.job_request_form_page .button_row a{ 
+  all: unset;
+}
+
+.job_info_page {
+  display: flex;
+  width: 98%;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 65%;
+}
+
+.job_info_page h2 {
+  margin-top: 1%;
+  margin-bottom: 1%;
   font-weight: 400;
 }
-.job_info_page .stepper{ 
-  margin-top: -50px;
-  margin-left: 75px;
-  margin-bottom: 70px;
+
+.job_info h4 {
+  margin-top: 1%;
+  margin-bottom: 1%;
+  color: rgba(0, 0, 0, 0.6);
 }
 
-.job_info_page .job_details{ 
-  margin-top: 0px;
-  margin-bottom: 16px;
-  font-weight: 200 ;
+.job_info_page .stepper {
+  width: 100%;
 }
 
-.job_info_page .job_info{ 
-  margin-left: 19%;
+.job_info_page .job_details {
+  font-weight: 200;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 1%;
+}
+
+.job_info_page .job_info {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 70%;
+  height: 70%;
 }
-.job_info .chip_row{ 
+
+.job_info .chip_row {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  margin-bottom: 2%;
 }
-.job_info .chip{ 
+
+.job_info .chip {
   width: max-content;
 }
 
-.job_info .open_to_bid .bid_input{
-  margin-top: 67px;
-  margin-bottom: 64px;
+.job_info .open_to_bid .bid_input {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.job_info .open_to_bid .bid_input button{ 
-  margin-top: 18px;
+
+.job_info .open_to_bid .bid_input button {
+  margin-left: 1%;
 }
 
-.job_info .pending_view{ 
+.job_info .pending_view {
   background: rgba(217, 217, 217, 1);
   width: 648px;
   height: 173px;
@@ -207,83 +279,101 @@ header h1 {
   justify-content: center;
   align-items: center;
   margin-top: 113px;
-  margin-bottom: 93.5px ;
+  margin-bottom: 93.5px;
 }
 
-.job_info .pending_view_input{ 
-  margin-top: 73px;
+.job_info .pending_view_input {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.job_info .pending_view_input .text_input{ 
-  margin-bottom: 26px;
+.job_info .pending_view_input .text_input {
+  margin-bottom: 2.5%;
 }
 
-.bid_accordian{ 
+.job_info .fufilled_view {
+  display: flex;
+  flex-direction: column;
+}
+
+.job_info .fufilled_view form {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.bid_accordian {
   height: fit-content;
 }
-.bid_accordian .collapsed_accordian_row{ 
+
+.bid_accordian .collapsed_accordian_row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
 }
-.bid_accordian .typography_component{
+
+.bid_accordian .typography_component {
   width: 100%;
 }
-.bid_accordian .collapsed_column{ 
+
+.bid_accordian .collapsed_column {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   width: 93%;
 }
-.bid_accordian .bid_amount{ 
+
+.bid_accordian .bid_amount {
   font-size: 20px;
   font-weight: 500;
 }
-.bid_accordian .expiration_date{ 
+
+.bid_accordian .expiration_date {
   font-size: 14px;
 }
-.bid_accordian .accept_button{ 
+
+.bid_accordian .accept_button {
   justify-self: flex-end;
 }
 
-.bid_accordian .more_details{ 
+.bid_accordian .more_details {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
 }
+
 footer {
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
   background-color: #F5F5F5;
   border-radius: 10px;
   height: 124px;
-  margin-left: 27px;
-  margin-right: 20px;
-  margin-bottom: 38.5px;
+  width: 100%;
 }
 
 footer img.logo2 {
-  margin-left: 48px;
+  margin-top: 2%;
   width: 49px;
   height: 57px;
-  margin-top: 14.5px;
+  margin-left: 2%;
 }
 
 footer p {
-  margin-top: 0px;
-  margin-bottom: 24px;
   font-family: 'Roboto Mono', monospace;
   text-align: left;
-  margin-left: 48px;
   color: rgba(0, 0, 0, 0.6);
   font-size: 16px;
 }
 
-footer p span {
-  margin-left: 43%;
+footer section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-bottom: 1%;
 }
