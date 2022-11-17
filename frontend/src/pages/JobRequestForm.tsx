@@ -102,7 +102,7 @@ export default function JobRequestForm(props: JobRequestFormProps) {
                         required
                         onChange={() => { }}
                     >
-                        <MenuItem value={1}> &#40;Goerli&#41; Ethereum </MenuItem>
+                        <MenuItem value={1}> &#40;Mumbai&#41; Polygon </MenuItem>
                         <MenuItem disabled value={2}>Optimism</MenuItem>
                     </Select>
                 </FormControl>

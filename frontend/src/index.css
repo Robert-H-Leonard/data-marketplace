@@ -75,7 +75,7 @@ header h1:hover {
 .dashboard {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: start;
   align-items: center;
   width: 95%;
   height: 75%;
@@ -85,6 +85,7 @@ header h1:hover {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  margin-bottom: 30px;
   width: 100%;
 }
 
@@ -108,18 +109,14 @@ header h1:hover {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  width: 100%
+  width: 100%;
+  margin-bottom: 95px;;
 }
 
 .filter_input_left {
   display: flex;
   flex-direction: row;
   width: 100%;
-}
-
-.filter_input_right {
-  display: flex;
-  flex-direction: row;
 }
 
 /* .filter_input_left {
@@ -130,6 +127,7 @@ header h1:hover {
 .filter_input_right {
   display: flex;
   flex-direction: row;
+  width: 200px;
 }
 
 .filter_input .search_input {

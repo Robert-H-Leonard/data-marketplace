@@ -28,11 +28,6 @@ struct DataDescription {
     string description;
 }
 
-struct DataDescription {
-    string dataFormat;
-    string description;
-}
-
 // Simplify
 struct OperatorSubmission {
     string jobId;
@@ -55,8 +50,7 @@ struct JobRequestData {
     DataDescription description;
 }
 
-interface JobRequestInterface is ChainlinkClient {
-    using Chainlink for Chainlink.Request;
+interface JobRequestInterface{
 
     // See example pagination here: https://programtheblockchain.com/posts/2018/04/20/storage-patterns-pagination/
     function getJobRequests(uint256 cursor, uint256 pageSize)
@@ -88,7 +82,10 @@ interface JobRequestInterface is ChainlinkClient {
 }
 
 // Contract to be implemented
-contract JobRequest is JobRequestInterface {
+contract JobRequest is JobRequestInterface, ChainlinkClient {
+
+    using Chainlink for Chainlink.Request;
+
     event JobRequestCreated(
         address indexed _createdBy,
         uint indexed requestId
@@ -122,6 +119,7 @@ contract JobRequest is JobRequestInterface {
     // Hashmap acting as a cache to know which bids we need to validate with automation contract
     mapping(uint256 => OperatorBid) private bidsPendingValidation;
     mapping(uint256 => uint256) public jobRequestToPendingBid;
+    mapping(uint256 => uint256) public validatedBids;
 
     uint256 public numOfBidsPendingValidation;
 
@@ -293,6 +291,10 @@ contract JobRequest is JobRequestInterface {
 
     }
 
+    function getValidatedBidId(uint jobRequestId) external returns(uint) {
+        return validatedBids[jobRequestId];
+    }
+
     function validateBid(uint jobRequestId , uint bidId, bool isValid) external returns (bool) {
         // check if job request id exists
         require(
@@ -314,6 +316,8 @@ contract JobRequest is JobRequestInterface {
 
                     numOfBidsPendingValidation -= 1;
 
+                    validatedBids[jobRequestId] = bidId;
+
                     return true;
 
                 } else {
@@ -331,13 +335,12 @@ contract JobRequest is JobRequestInterface {
         }
     }
 
-    ////////// Validation functions //////////
+    // Caled by automation contract to see if upkeep is needed
     function validatePendingBids() external override returns (bool) {
         return numOfBidsPendingValidation > 0;
     }
 
-    // Data validation function.
-    // When `validatePendingBids` is called that method will attemot to call this method at least once (the first non zero address retreived from bidsPendingValidation)
+
     function validateBidSubmission()
         external
         returns (bool)
@@ -362,11 +365,11 @@ contract JobRequest is JobRequestInterface {
         return false;
     }
 
-    function requestData() public returns (OperatorBid bid, JobRequestData jobRequest) {
-        Chainlink.Request memory req = buildChainlinkRequest(bid.submission.jobId, address(this), jobRequest.requestedDataSource.url);
+    function requestData() public returns (uint) {
+        // Chainlink.Request memory req = buildChainlinkRequest(bid.submission.jobId, address(this), jobRequest.requestedDataSource.url);
 
-        // Save request id on bid
-        return sendChainlinkRequest(req, bid.dataFeedFee);
+        // // Save request id on bid
+        // return sendChainlinkRequest(req, bid.dataFeedFee);
     }
 
     function fulfillData(bytes32 _requestId, uint256 data) public recordChainlinkFulfillment(_requestId) {

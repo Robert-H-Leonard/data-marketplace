@@ -18,7 +18,7 @@ export default function Dashboard(props: DashboardProps) {
                 <h2 className='job_requests_title'> Job Requests</h2>
             </title>
 
-            {/* <FilterInput /> */}
+            <FilterInput />
 
             {isLoading
                 ?

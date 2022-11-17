@@ -44,7 +44,7 @@ export default function FilterInput() {
                         <div className='.filter_input_right'>
                             <Link to="/createJob" style={{ textDecoration: 'none' }}>
                                 <Button color="primary" size="medium" variant="contained" startIcon={<AddIcon/>}>
-                                    Add Job
+                                    Add Job Request
                                 </Button>
                             </Link>
                         </div>
