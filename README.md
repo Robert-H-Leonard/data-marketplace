@@ -34,6 +34,7 @@ When adding new merge request vercel will create preview deployments for each me
 - `Automation.sol`: Smart contract used to register Chainlink Automation.
 
   - Contract: https://mumbai.polygonscan.com/address/0x7E954307CB634B1885c3b0cFdB0e359f09E7dbF6
+  - Automation: https://automation.chain.link/mumbai/79616312988537092179866366291075391444640142700716884656781977912678455043062
 
 
 
