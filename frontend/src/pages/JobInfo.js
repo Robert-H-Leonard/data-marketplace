@@ -190,14 +190,18 @@ export default function JobInfo({ jobRequestStore }) {
 
     const [showBidFields, shouldShowBidFields] = useState(false);
     const [desiredBid, setDesiredBid] = useState(undefined);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     const onSubmitBid = async () => {
         await jobRequestStore.submitBid(id, { jobId: desiredBid.id, nodeWalletAddress: desiredBid.address }, desiredBid.fee);
+        setShouldRedirect(true);
     }
 
     return (
         <div className="job_info_page">
-
+            {
+                shouldRedirect ? <Navigate to="/" /> : <></>
+            }
             <Stepper className='stepper' activeStep={steps.indexOf(currentState)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
