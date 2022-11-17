@@ -65,7 +65,7 @@ export class JobRequestStore implements IJobRequestStore {
     private static instance?: IJobRequestStore;
 
     private constructor(signer?: providers.JsonRpcSigner) {
-        this.contractAddress = "0x29E7ab86372FEfcD701a28058887CFE4Adef069C";
+        this.contractAddress = "0x4B464136CCBb709E1b238E00e8C40975C6A32e8c";
         this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://special-side-mound.matic-testnet.discover.quiknode.pro/4df73953a32b2538e81811cb085b2bd64d6a953c/");
         this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, signer ? signer : this.contractRpcProvider);
     }

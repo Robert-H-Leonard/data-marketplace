@@ -1,62 +1,5 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "jobRequestId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "operatorBidId",
-				"type": "uint256"
-			}
-		],
-		"name": "acceptBid",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_url",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_auth",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_dataFormat",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_description",
-				"type": "string"
-			}
-		],
-		"name": "createJobRequest",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -158,29 +101,12 @@
 				"type": "uint256"
 			},
 			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "jobId",
-						"type": "string"
-					},
-					{
-						"internalType": "address",
-						"name": "nodeOperator",
-						"type": "address"
-					}
-				],
-				"internalType": "struct OperatorSubmission",
-				"name": "operatorSubmission",
-				"type": "tuple"
-			},
-			{
 				"internalType": "uint256",
-				"name": "dataFee",
+				"name": "operatorBidId",
 				"type": "uint256"
 			}
 		],
-		"name": "submitBid",
+		"name": "acceptBid",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -188,48 +114,32 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "jobRequestId",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "_url",
+				"type": "string"
 			},
 			{
-				"internalType": "uint256",
-				"name": "bidId",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
 			},
 			{
-				"internalType": "bool",
-				"name": "isValid",
-				"type": "bool"
-			}
-		],
-		"name": "validateBid",
-		"outputs": [
+				"internalType": "string",
+				"name": "_auth",
+				"type": "string"
+			},
 			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "validateBidSubmission",
-		"outputs": [
+				"internalType": "string",
+				"name": "_dataFormat",
+				"type": "string"
+			},
 			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "validatePendingBids",
+		"name": "createJobRequest",
 		"outputs": [
 			{
 				"internalType": "bool",
@@ -504,6 +414,25 @@
 				"type": "uint256"
 			}
 		],
+		"name": "jobRequestToPendingBid",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "jobRequests",
 		"outputs": [
 			{
@@ -565,25 +494,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "jobRequestToPendingBid",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "numOfBidsPendingValidation",
 		"outputs": [
@@ -620,6 +530,96 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "jobId",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "nodeOperator",
+						"type": "address"
+					}
+				],
+				"internalType": "struct OperatorSubmission",
+				"name": "operatorSubmission",
+				"type": "tuple"
+			},
+			{
+				"internalType": "uint256",
+				"name": "dataFee",
+				"type": "uint256"
+			}
+		],
+		"name": "submitBid",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bidId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isValid",
+				"type": "bool"
+			}
+		],
+		"name": "validateBid",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "validateBidSubmission",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "validatePendingBids",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

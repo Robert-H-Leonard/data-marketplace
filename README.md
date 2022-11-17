@@ -29,11 +29,11 @@ When adding new merge request vercel will create preview deployments for each me
 ## Backend
 - `JobRequest.sol`: Smart contract that acts as a data store for the app + an oracle client to validate node operator jobs.
 
-  - Contract: https://mumbai.polygonscan.com/address/0xf75421F63B76AA083E09A46349233480B88c96a8
+  - Contract: https://mumbai.polygonscan.com/address/0x4B464136CCBb709E1b238E00e8C40975C6A32e8c
 
 - `Automation.sol`: Smart contract used to register Chainlink Automation.
 
-  - Contract: https://mumbai.polygonscan.com/address/0x493AC21073D1d501e27F4eE617D966097176d0da
+  - Contract: https://mumbai.polygonscan.com/address/0x7E954307CB634B1885c3b0cFdB0e359f09E7dbF6
 
 
 
