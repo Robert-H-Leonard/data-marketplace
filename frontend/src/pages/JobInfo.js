@@ -126,7 +126,7 @@ function ValidateView() {
     )
 }
 
-function FufilledView(id, requestorAddres) {
+function FufilledView(id, winningBid) {
     return (
         <div className='fufilled_view'>
             <h3>Validation Results</h3>
@@ -134,7 +134,7 @@ function FufilledView(id, requestorAddres) {
                 <TextField disabled
                     id="outlined-read-only-input"
                     label="Returned Value"
-                    defaultValue="uint256: 53"
+                    defaultValue="uint256: 1306"
                     InputProps={{
                         readOnly: true,
                     }}
@@ -142,7 +142,8 @@ function FufilledView(id, requestorAddres) {
                 <TextField disabled
                     id="outlined-read-only-input"
                     label="Node Operator Address"
-                    defaultValue="****"
+                    style={{width: "420px"}}
+                    defaultValue={winningBid.nodeWalletAddress}
                     InputProps={{
                         readOnly: true,
                     }}
@@ -150,7 +151,7 @@ function FufilledView(id, requestorAddres) {
                 <TextField disabled
                     id="outlined-read-only-input"
                     label="Job ID"
-                    defaultValue={id}
+                    defaultValue={winningBid.submission.jobId}
                     InputProps={{
                         readOnly: true,
                     }}
@@ -158,7 +159,7 @@ function FufilledView(id, requestorAddres) {
                 <TextField disabled
                     id="outlined-read-only-input"
                     label="Data Fee"
-                    defaultValue="**"
+                    defaultValue={`${winningBid.dataFeedFee} LINK`}
                     InputProps={{
                         readOnly: true,
                     }}
@@ -171,7 +172,7 @@ function FufilledView(id, requestorAddres) {
 export default function JobInfo({ jobRequestStore }) {
     const { state: { jobRequest } } = useLocation();
 
-    const { currentState, id, network, requestorAddress, name, bids, description } = jobRequest;
+    const { currentState, id, network, requestorAddress, name, bids, description, winningBid } = jobRequest;
 
     const steps = ['OpenBid', 'PendingValidation', 'Validated']
 
@@ -206,7 +207,7 @@ export default function JobInfo({ jobRequestStore }) {
                 </div>
                 {currentState === 'OpenBid' && OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId: id, shouldShowBidFields, setDesiredBid, showBidFields, submitBid: onSubmitBid })}
                 {currentState === 'PendingValidation' && ValidateView()}
-                {currentState === 'Validated' && FufilledView(id, requestorAddress)}
+                {currentState === 'Validated' && FufilledView(id, winningBid)}
             </div>
         </div>
 

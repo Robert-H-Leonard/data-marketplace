@@ -35,10 +35,17 @@ function App() {
         const jobRequest = await jobRequestStore.getJobRequests();
         
         // Load their bids
-        for(const req of jobRequest) {
-          const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
-          loadedRequest.push({ ...req, bids})
+      for(const req of jobRequest) {
+        const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
+
+        let winningBid = undefined;
+
+        if(req.currentState === "Validated") {
+          const winningBidId = await (jobRequestStore as JobRequestStore).getWinningBidId(req.id);
+          winningBid = bids[winningBidId];
         }
+        loadedRequest.push({ ...req, bids, winningBid })
+      }
   
   
         setJobRequests(loadedRequest);
@@ -60,7 +67,14 @@ function App() {
       // Load their bids
       for(const req of jobRequest) {
         const bids = await jobRequestStore.getBidsOnJobRequest(req.id!!)
-        loadedRequest.push({ ...req, bids })
+
+        let winningBid = undefined;
+
+        if(req.currentState === "Validated") {
+          const winningBidId = await (jobRequestStore as JobRequestStore).getWinningBidId(req.id);
+          winningBid = bids[winningBidId];
+        }
+        loadedRequest.push({ ...req, bids, winningBid })
       }
 
 
@@ -103,11 +117,11 @@ function App() {
 
 const WrappedApp = () => {
   const { chains, provider } = configureChains(
-    [chain.goerli],
+    [chain.polygonMumbai],
     [jsonRpcProvider({
       rpc: (chain) =>
       ({
-        http: `https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba`
+        http: `https://special-side-mound.matic-testnet.discover.quiknode.pro/4df73953a32b2538e81811cb085b2bd64d6a953c/`
       }),
     })
     ]

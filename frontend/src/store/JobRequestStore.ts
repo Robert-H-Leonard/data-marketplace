@@ -26,12 +26,12 @@ export interface JobRequestData {
     auth: string;
     dataFormat: string;
     description: string;
-    validatedFee?: number;
     validatedBidId?: number;
 }
 
 export interface JobRequestDataWithBids extends JobRequestData {
     bids: OperatorBid[];
+    winningBid?: OperatorBid;
 }
 
 interface OperatorSubmission {
@@ -65,8 +65,8 @@ export class JobRequestStore implements IJobRequestStore {
     private static instance?: IJobRequestStore;
 
     private constructor(signer?: providers.JsonRpcSigner) {
-        this.contractAddress = "0xDff41DB060Be84562E64daB5583Ca932543438c2";
-        this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://nd-077-762-934.p2pify.com/c0498f945c72c9e9ecb6e3c68313eaba");
+        this.contractAddress = "0x29E7ab86372FEfcD701a28058887CFE4Adef069C";
+        this.contractRpcProvider = new ethers.providers.JsonRpcProvider("https://special-side-mound.matic-testnet.discover.quiknode.pro/4df73953a32b2538e81811cb085b2bd64d6a953c/");
         this.jobRequestContract = new ethers.Contract(this.contractAddress, JobRequestAbi, signer ? signer : this.contractRpcProvider);
     }
 
@@ -100,7 +100,7 @@ export class JobRequestStore implements IJobRequestStore {
                 auth: jobRequest.requestedDataSource[2],
                 dataFormat: jobRequest.description.description.dataFormat,
                 description: jobRequest.description.description,
-                network: "Goerli"
+                network: "Polygon (Mumbai)"
             } as JobRequestData
         })
     }
@@ -122,18 +122,24 @@ export class JobRequestStore implements IJobRequestStore {
         });
     }
 
+    public async getWinningBidId(jobRequestId: number): Promise<number> {
+        const result = await this.jobRequestContract.getValidatedBidId(jobRequestId);
+        //@ts-ignore
+        return result.toNumber();
+    }
+
     public async acceptBid(jobRequestId: number, operatorBid: number): Promise<void> {
-        const result = await this.jobRequestContract.acceptBid(jobRequestId, operatorBid);
+        await this.jobRequestContract.acceptBid(jobRequestId, operatorBid);
         return;
     }
 
     public async submitBid(jobRequestId: number, operatorSubmission: OperatorSubmission, dataFee: number): Promise<void> {
-        const result = await this.jobRequestContract.submitBid(jobRequestId, [operatorSubmission.jobId,operatorSubmission.nodeWalletAddress], dataFee);
+        await this.jobRequestContract.submitBid(jobRequestId, [operatorSubmission.jobId,operatorSubmission.nodeWalletAddress], dataFee);
         return;
     }
 
     public async getPendingBid(jobRequestId: number): Promise<number | undefined> {
-        const result = await this.jobRequestContract.getPendingBidOnJobRequest(jobRequestId);
+        await this.jobRequestContract.getPendingBidOnJobRequest(jobRequestId);
         return;
     }
 

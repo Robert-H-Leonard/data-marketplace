@@ -120,12 +120,6 @@
 				"internalType": "int256",
 				"name": "jobRequestId",
 				"type": "int256"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "nodeOperator",
-				"type": "address"
 			}
 		],
 		"name": "OperatorSubmissionValidated",
@@ -188,6 +182,48 @@
 		],
 		"name": "submitBid",
 		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bidId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isValid",
+				"type": "bool"
+			}
+		],
+		"name": "validateBid",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "validateBidSubmission",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -445,6 +481,25 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "jobRequestId",
+				"type": "uint256"
+			}
+		],
+		"name": "getValidatedBidId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -557,6 +612,25 @@
 	{
 		"inputs": [],
 		"name": "numSubmittedOfBids",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "validatedBids",
 		"outputs": [
 			{
 				"internalType": "uint256",

@@ -181,7 +181,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
         }
         let fee = Math.random().toFixed(2)
         let bids = 0
-        let network = `(Goerli) Ethereum`
+        let network = `(Mumbai) Polygon`
 
         return {
             id: jobRequest.id,
@@ -267,7 +267,7 @@ export default function EnhancedTable(props: EnhancedTableProps) {
                                             <TableCell align={'center'}>{`${uniqueNamesGenerator({ dictionaries: [names], seed: jobRequest.requestorAddress }).toLowerCase()}.eth`}</TableCell>
                                             <TableCell align={'center'}>{jobRequest.name}</TableCell>
                                             <TableCell align={'center'} >{jobRequest.network}</TableCell>
-                                            <TableCell align={'center'}>{jobRequest.validatedFee}</TableCell>
+                                            <TableCell align={'center'}>{jobRequest.winningBid ? `${jobRequest.winningBid.dataFeedFee} LINK` : ""}</TableCell>
                                             <TableCell align={'center'}>{jobRequest.bids.length}</TableCell>
                                             <TableCell align={'center'}><Chip label={jobRequest.currentState} color={jobRequest.currentState === 'OpenBid' ? 'primary' : jobRequest.currentState === 'Validated' ? 'success' : 'warning'} /></TableCell>
                                         </TableRow>
