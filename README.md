@@ -1,28 +1,39 @@
-# Hackathon Project
-Checkout the high level details of this project in this notion doc: https://www.notion.so/Data-Marketplace-fa4541243d9849a9bdc76b8dcbb8a1bf
 
+# Description
+# Hackathon Project Demo
+This project is deployed here: https://chainlink-data-marketplace.vercel.app/
 
-# App Architecture
-Link to miro board: https://miro.com/app/board/uXjVPKqjxQM=/
+The project is structured into 2 components:
 
-<img width="1107" alt="image" src="https://user-images.githubusercontent.com/40375385/198289055-4c404fcb-3ad2-4c85-b94c-f7e46cfbcc70.png">
+1. Frontend
 
-# Development
-Please create a new branch and open pull request for any code additions
-# Deployment
+2. Contract
+
+# Local Development
+In order to run locally follow these commands:
+
+1. Clone this repository `git clone https://github.com/KITTLABS/chainlink-data-marketplace.git`.
+
+2. Navigate to the frontend folder `cd frontend`.
+
+3. Install dependencies `yarn install` or `npm run install`.
+
+3. Run app `yarn start` or `npm run start`.
 
 ## Frontend
-We are using Vercel to deploy our front end. Whenever there is a change to master it will trigger a deployment to our apps public url:
-
-https://chainlink-data-marketplace.vercel.app/
+We use vercel to deploy our front end. Whenever there is a change to master it will trigger a deployment to our apps public url.
 
 When adding new merge request vercel will create preview deployments for each merge request so we can test everything before merging to master.
 
 
 ## Backend
-We are using Digital Ocean for our chainlink node.
+- `JobRequest.sol`: Smart contract that acts as a data store for the app + an oracle client to validate node operator jobs.
 
-Chainlink node repo: https://github.com/KITTLABS/chainlink-node
+  - Contract: https://mumbai.polygonscan.com/address/0xf75421F63B76AA083E09A46349233480B88c96a8
+
+- `Automation.sol`: Smart contract used to register Chainlink Automation.
+
+  - Contract: https://mumbai.polygonscan.com/address/0x493AC21073D1d501e27F4eE617D966097176d0da
 
 
 
