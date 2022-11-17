@@ -37,6 +37,7 @@ function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
     const [submittedJobId, setSubmittedJobId] = useState("");
     const [submittedNodeAddress, setSubmittedNodeAdress] = useState("");
     const [submitFee, setSubmitFee] = useState("");
+    const canSubmitBid = !bids.find(bid => bid.nodeWalletAddress === address);
 
     return (
         <section className='open_to_bid'>
@@ -50,7 +51,7 @@ function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
                     }
                 </div>
             }
-            {requestorAddress != address && !showBidFields &&
+            {requestorAddress != address && !showBidFields && address &&
                 <div>
                     <form className='bid_input'>
                         <TextField
@@ -63,10 +64,21 @@ function OpenToBidView({ requestorAddress, bids, jobRequestStore, jobRequestId, 
                                 pattern: '[0-9]*',
                                 endAdornment: <InputAdornment position="end">LINK</InputAdornment>,
                             }}
+                            disabled={!canSubmitBid}
                             onChange={(event) => setSubmitFee(event.target.value)}
                         />
-                        <Button variant="contained" onClick={() => showBid()}>BID</Button>
+                        <Button variant="contained" onClick={() => showBid()} disabled={!canSubmitBid}>BID</Button>
                     </form>
+                    <h3>Bids</h3>
+                    {
+                        bids.map(bid => {
+                            return <BidAccordian link={bid.dataFeedFee} expiration='11/30' user={bid.nodeWalletAddress} requestor={false} jobRequestStore={jobRequestStore} bidId={bid.id} jobRequestId={jobRequestId} />
+                        })
+                    }
+                </div>
+            }
+            {!showBidFields && !address &&
+                <div>
                     <h3>Bids</h3>
                     {
                         bids.map(bid => {
@@ -178,18 +190,14 @@ export default function JobInfo({ jobRequestStore }) {
 
     const [showBidFields, shouldShowBidFields] = useState(false);
     const [desiredBid, setDesiredBid] = useState(undefined);
-    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     const onSubmitBid = async () => {
         await jobRequestStore.submitBid(id, { jobId: desiredBid.id, nodeWalletAddress: desiredBid.address }, desiredBid.fee);
-        setShouldRedirect(true);
     }
 
     return (
         <div className="job_info_page">
-            {
-                shouldRedirect ? <Navigate to="/" /> : <></>
-            }
+
             <Stepper className='stepper' activeStep={steps.indexOf(currentState)} alternativeLabel>
                 {steps.map((label) => (
                     <Step key={label}>
