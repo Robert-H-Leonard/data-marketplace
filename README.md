@@ -20,11 +20,6 @@ In order to run locally follow these commands:
 
 3. Run app `yarn start` or `npm run start`.
 
-## Frontend
-We use vercel to deploy our front end. Whenever there is a change to master it will trigger a deployment to our apps public url.
-
-When adding new merge request vercel will create preview deployments for each merge request so we can test everything before merging to master.
-
 
 ## Backend
 - `JobRequest.sol`: Smart contract that acts as a data store for the app + an oracle client to validate node operator jobs.
