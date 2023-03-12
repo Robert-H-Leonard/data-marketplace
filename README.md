@@ -1,5 +1,11 @@
 
 # Description
+
+# App Architecture
+Link to miro board: https://miro.com/app/board/uXjVPKqjxQM=/
+
+<img width="1107" alt="image" src="https://user-images.githubusercontent.com/40375385/198289055-4c404fcb-3ad2-4c85-b94c-f7e46cfbcc70.png">
+
 # Hackathon Project Demo
 This project is deployed here: https://chainlink-data-marketplace.vercel.app/
 
@@ -12,7 +18,7 @@ The project is structured into 2 components:
 # Local Development
 In order to run locally follow these commands:
 
-1. Clone this repository `git clone https://github.com/KITTLABS/chainlink-data-marketplace.git`.
+1. Clone this repository `git clone https://github.com/Robert-H-Leonard/data-marketplace.git`.
 
 2. Navigate to the frontend folder `cd frontend`.
 
